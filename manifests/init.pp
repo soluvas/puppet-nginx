@@ -65,6 +65,7 @@ class nginx {
     owner   => 'root',
     group   => 'root',
     require => Package['nginx'],
+    notify  => Service['nginx'],
   }
 
   file { '/etc/nginx/ssl':
@@ -73,6 +74,7 @@ class nginx {
     owner   => 'root',
     group   => 'root',
     require => Package['nginx'],
+    notify  => Service['nginx'],
   }
 
   file { $nginx_includes:
@@ -81,11 +83,16 @@ class nginx {
     owner   => 'root',
     group   => 'root',
     require => Package['nginx'],
+    notify  => Service['nginx'],
   }
 
-  # Nuke default files
-  file { '/etc/nginx/fastcgi_params':
-    ensure  => absent,
+  # Tweak fastcgi_params
+  file { '/etc/nginx/includes/fastcgi_params.inc':
+    ensure  => file,
+    source  => 'puppet:///modules/nginx/fastcgi_params.inc',
+    mode    => 0644,
     require => Package['nginx'],
+    notify  => Service['nginx'],
   }
+
 }
