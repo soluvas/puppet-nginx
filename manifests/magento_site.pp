@@ -1,6 +1,6 @@
-# Define: nginx::fcgi::site
+# Define: nginx::magento_site
 #
-# Create a fcgi site config from template using parameters.
+# Create a magento fcgi site config from template using parameters.
 # You can use my php5-fpm class to manage fastcgi servers.
 #
 # Parameters :
@@ -17,7 +17,7 @@
 #   See http://wiki.nginx.org for details.
 #
 # Templates :
-# * nginx/fcgi_site.erb
+# * nginx/magento_site.erb
 #
 # Sample Usage :
 #   nginx::fcgi::site { 'default':
@@ -81,7 +81,7 @@ define nginx::magento_site(
 
   nginx::site { $name:
     ensure  => $ensure,
-    content => template('nginx/fcgi_site.erb'),
+    content => template('nginx/magento_site.erb'),
   }
 }
 
