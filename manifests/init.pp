@@ -86,11 +86,9 @@ class nginx {
     notify  => Service['nginx'],
   }
 
-  # Tweak fastcgi_params
-  file { '/etc/nginx/includes/fastcgi_params.inc':
-    ensure  => file,
-    source  => 'puppet:///modules/nginx/fastcgi_params.inc',
-    mode    => 0644,
+  # Nuke default files -- replaced with /etc/nginx/includes/fastcgi_params.inc, see fcgi.pp
+  file { '/etc/nginx/fastcgi_params':
+    ensure  => absent,
     require => Package['nginx'],
     notify  => Service['nginx'],
   }
