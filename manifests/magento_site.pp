@@ -37,6 +37,7 @@ define nginx::magento_site(
   $root,
   $fastcgi_pass,
   $domain,
+  $mobile_domain,
   $ensure              = 'present',
   $index               = 'index.html index.php',
   $include             = '',
