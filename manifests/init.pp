@@ -19,24 +19,13 @@
 # Templates:
 #   - nginx.conf.erb => /etc/nginx/nginx.conf
 #
-class nginx {
+class nginx(
+  $user               = 'www-data',
+  $worker_processes   = 1,
+  $worker_connections = 1024
+) {
   $nginx_includes = '/etc/nginx/includes'
   $nginx_conf = '/etc/nginx/conf.d'
-
-  $real_nginx_user = $::nginx_user ? {
-    undef   => 'www-data',
-    default => $::nginx_user
-  }
-
-  $real_nginx_worker_processes = $::nginx_worker_processes ? {
-    undef   => '1',
-    default => $::nginx_worker_processes
-  }
-
-  $real_nginx_worker_connections = $::nginx_worker_connections ? {
-    undef   => '1024',
-    default => $::nginx_worker_connections
-  }
 
   if ! defined(Package['nginx']) { package { 'nginx': ensure => installed }}
 
