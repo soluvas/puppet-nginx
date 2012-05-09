@@ -80,7 +80,7 @@ server {
         fastcgi_param           MAGE_RUN_TYPE   store;
         
 <% if listen == '443' -%>        
-        fastcgi_param           HTTPS           on
+        fastcgi_param           HTTPS           on;
 <% end %>
 
         include                 includes/fastcgi_params.inc;
