@@ -5,15 +5,15 @@ server {
     root        <%= root %>;
 
 <% if listen == '443' -%>
-    ssl  on;
-    ssl_certificate  <%= real_ssl_certificate %>;
-    ssl_certificate_key  <%= real_ssl_certificate_key %>;
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
 
-    ssl_session_timeout  <%= ssl_session_timeout %>;
+    ssl_session_timeout         <%= ssl_session_timeout %>;
 
-    ssl_protocols  SSLv2 SSLv3 TLSv1;
-    ssl_ciphers  ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
-    ssl_prefer_server_ciphers   on;
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
 <% end -%>
 
     location / {
@@ -76,14 +76,14 @@ server {
         fastcgi_split_path_info ^(.+\.php)(/.+)$; 
         fastcgi_pass            <%= fastcgi_pass %>;
         fastcgi_param           SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_param           MAGE_RUN_CODE default; ## Store code is defined in administration > Configuration > Manage Stores
-        fastcgi_param           MAGE_RUN_TYPE store;
-        # nginx: [emerg] unknown "fastcgi_https" variable
-        #fastcgi_param  HTTPS $fastcgi_https;
+        fastcgi_param           MAGE_RUN_CODE   default; ## Store code is defined in administration > Configuration > Manage Stores
+        fastcgi_param           MAGE_RUN_TYPE   store;
+        
+<% if listen == '443' -%>        
+        fastcgi_param           HTTPS           on
+<% end %>
 
         include                 includes/fastcgi_params.inc;
-
-#        fastcgi_index index.php; # ??
     }
 
 <% if include  != '' -%>
@@ -93,8 +93,9 @@ server {
 <% end -%>
 }
 
+<% if listen != '443' -%>
 server {
-    listen      80;
+    listen      <%= listen %>;
     server_name <%= mobile_domain %> www.<%= mobile_domain %>;
     access_log  <%= real_access_log %>;
     root        <%= root %>;
@@ -147,14 +148,12 @@ server {
         #fastcgi_param  HTTPS $fastcgi_https;
 
         include                 includes/fastcgi_params.inc;
-
-#        fastcgi_index index.php; # ??
     }
 
 }
 
 server {
-    listen      80;
+    listen      <%= listen %>;
     server_name js.<%= domain %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
     root        <%= root %>/js;
@@ -164,7 +163,7 @@ server {
 }
 
 server {
-    listen      80;
+    listen      <%= listen %>;
     server_name skin.<%= domain %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
     root        <%= root %>/skin;
@@ -174,7 +173,7 @@ server {
 }
 
 server {
-    listen      80;
+    listen      <%= listen %>;
     server_name media.<%= domain %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
     root        <%= root %>/media;
@@ -182,3 +181,4 @@ server {
     expires     1y;
     autoindex   off;
 }
+<% end -%>
