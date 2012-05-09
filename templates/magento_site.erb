@@ -156,7 +156,7 @@ server {
 server {
     listen      80;
     server_name js.<%= domain %>;
-    access_log  /var/log/nginx/littlestar_access.log;
+    access_log  /var/log/nginx/<%= name %>_access.log;
     root        <%= root %>/js;
 
     expires     1y;
