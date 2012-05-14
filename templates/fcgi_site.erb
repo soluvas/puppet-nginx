@@ -1,11 +1,13 @@
 server {
-        listen   <%= listen %> ;
+        listen       <%= listen %> ;
 
-	server_name  <% real_server_name.each do |s_n| -%><%= s_n %> <% end -%>;
+        server_name  <% real_server_name.each do |s_n| -%><%= s_n %> <% end -%>;
 
-        access_log  <%= real_access_log %>;
+        access_log   <%= real_access_log %>;
 
-	root <%= root %>;
+        root         <%= root %>;
+
+        autoindex    <%= autoindex %>;
 
 <% if listen == '443' %>
         ssl  on;
