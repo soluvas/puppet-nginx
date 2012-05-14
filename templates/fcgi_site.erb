@@ -1,7 +1,7 @@
 server {
         listen       <%= listen %> ;
 
-        server_name  <% real_server_name.each do |s_n| -%><%= s_n %> <% end -%>;
+        server_name  <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
 
         access_log   <%= real_access_log %>;
 

@@ -1,6 +1,6 @@
 server {
     listen      <%= listen %>;
-    server_name <%= real_server_name.join(' ') %>;
+    server_name <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
     access_log  <%= real_access_log %>;
     root        <%= root %>;
 }
