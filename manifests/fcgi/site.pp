@@ -10,6 +10,8 @@
 # * server_name : server_name directive (could be an array)
 # * listen : address/port the server listen to. Defaults to 80. Auto enable ssl if 443
 # * access_log : custom acces logs. Defaults to /var/log/nginx/$name_access.log
+# * index : the index file. Defaults to index.php.
+# * autoindex (on|off) : whether directory index is shown when index file not found. Defaults to off.
 # * include : custom include for the site (could be an array). Include files must exists
 #   to avoid nginx reload errors. Use with nginx::site_include
 # * ssl_certificate : ssl_certificate path. If empty auto-generating ssl cert
@@ -38,11 +40,11 @@ define nginx::fcgi::site(
   $fastcgi_pass,
   $ensure              = 'present',
   $index               = 'index.php',
+  $autoindex           = 'off',
   $include             = '',
   $listen              = '80',
   $server_name         = undef,
   $access_log          = undef,
-  $autoindex           = 'off',
   $ssl_certificate     = undef,
   $ssl_certificate_key = undef,
   $ssl_session_timeout = '5m') {
