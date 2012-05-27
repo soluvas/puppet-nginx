@@ -36,6 +36,13 @@ http {
     gzip_buffers        16 8k;
     
     gzip_disable        "MSIE [1-6]\.(?!.*SV1)";
+    
+<% if !ssl_certificate.empty? -%>
+    ssl_certificate     <%= ssl_certificate %>;
+<% end -%>
+<% if !ssl_certificate_key.empty? -%>
+    ssl_certificate_key <%= ssl_certificate_key %>;
+<% end -%>
 
     include /etc/nginx/conf.d/*.conf;
     include /etc/nginx/sites-enabled/*;
