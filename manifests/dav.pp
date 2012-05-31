@@ -1,6 +1,6 @@
-# Define: nginx::static
+# Define: nginx::dav
 #
-# Create a static site config from template using parameters.
+# Create a WebDAV site config from template using parameters.
 #
 # Parameters :
 # * ensure: typically set to "present" or "absent". Defaults to "present"
@@ -10,7 +10,7 @@
 # * access_log : custom acces logs. Defaults to /var/log/nginx/$name_access.log
 #
 # Templates :
-# * nginx/static.erb
+# * nginx/dav.erb
 #
 # Sample Usage :
 #  nginx::static { 'www.kreasiindonesia.com':
@@ -21,7 +21,7 @@
 #                     'plus.kreasiindonesia.com', 'www.plus.kreasiindonesia.com'],
 #    root         => '/home/magento/www_maintenance',
 #  }
-define nginx::static(
+define nginx::dav(
   $root,
   $ensure              = 'present',
   $listen              = '80',
@@ -40,7 +40,6 @@ define nginx::static(
 
   nginx::site { $name:
     ensure  => $ensure,
-    content => template('nginx/static.erb'),
+    content => template('nginx/dav.erb'),
   }
 }
-

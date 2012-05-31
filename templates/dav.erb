@@ -1,0 +1,23 @@
+server {
+    listen      <%= listen %>;
+    server_name <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
+    access_log  <%= real_access_log %>;
+    root        <%= root %>;
+    
+    client_max_body_size     8M;
+#    client_body_temp_path  /tmp/data_client_temp;
+    create_full_put_path     on;
+    dav_access               user:rw group:rw all:r;
+
+    location / {
+        autoindex on;
+
+        dav_methods           PUT DELETE MKCOL COPY MOVE;
+#        dav_ext_methods PROPFIND OPTIONS;
+
+#         limit_except  GET {
+#             allow  127.0.0.1/24;
+#             deny   all;
+#         }
+    }    
+}
