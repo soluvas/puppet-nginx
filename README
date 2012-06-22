@@ -109,5 +109,14 @@ Sample Usage :
                 server_name     => "$fqdn",
          }
 
+## Expires header
+
+expires header is now removed from global nginx.conf for compatibility reasons.
+If you want this header (and you WILL want it), set it in per server or per location config:
+
+    # http://developer.yahoo.com/performance/rules.html#expires
+    expires 1y;
+
+
 ## CHANGELOG ##
 - v0.2 : * ssl support
