@@ -44,6 +44,8 @@ define nginx::magento_site(
   $listen              = '80',
   $server_name         = undef,
   $access_log          = undef,
+  $default_store_code  = 'default',
+  $mobile_store_code   = 'm',
   $ssl_certificate     = undef,
   $ssl_certificate_key = undef,
   $ssl_session_timeout = '5m') {

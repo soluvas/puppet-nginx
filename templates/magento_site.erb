@@ -76,7 +76,7 @@ server {
         fastcgi_split_path_info ^(.+\.php)(/.+)$; 
         fastcgi_pass            <%= fastcgi_pass %>;
         fastcgi_param           SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_param           MAGE_RUN_CODE   default; ## Store code is defined in administration > Configuration > Manage Stores
+        fastcgi_param           MAGE_RUN_CODE   <%= default_store_code %>; ## Store code is defined in administration > Configuration > Manage Stores
         fastcgi_param           MAGE_RUN_TYPE   store;
         
 <% if listen == '443' -%>        
@@ -93,12 +93,25 @@ server {
 <% end -%>
 }
 
-<% if listen != '443' -%>
+# Even if using HTTPS, m/skin/js/media subdomains are still served, because ability to use wildcard SSL certificates
+
 server {
     listen      <%= listen %>;
     server_name <%= mobile_domain %> www.<%= mobile_domain %>;
     access_log  <%= real_access_log %>;
     root        <%= root %>;
+
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
 
     location / {
         index     index.html index.php; ## Allow a static html file to be shown first
@@ -142,10 +155,12 @@ server {
         fastcgi_split_path_info ^(.+\.php)(/.+)$; 
         fastcgi_pass            <%= fastcgi_pass %>;
         fastcgi_param           SCRIPT_FILENAME $document_root$fastcgi_script_name;
-        fastcgi_param           MAGE_RUN_CODE m; ## Store code is defined in administration > Configuration > Manage Stores
+        fastcgi_param           MAGE_RUN_CODE <%= mobile_store_code %>; ## Store code is defined in administration > Configuration > Manage Stores
         fastcgi_param           MAGE_RUN_TYPE store;
-        # nginx: [emerg] unknown "fastcgi_https" variable
-        #fastcgi_param  HTTPS $fastcgi_https;
+
+<% if listen == '443' -%>        
+        fastcgi_param           HTTPS           on;
+<% end %>
 
         include                 includes/fastcgi_params.inc;
     }
@@ -158,6 +173,18 @@ server {
     access_log  /var/log/nginx/<%= name %>_access.log;
     root        <%= root %>/js;
 
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
     expires     1y;
     autoindex   off;
 }
@@ -167,6 +194,18 @@ server {
     server_name skin.<%= domain %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
     root        <%= root %>/skin;
+
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
 
     expires     1y;
     autoindex   off;
@@ -178,7 +217,18 @@ server {
     access_log  /var/log/nginx/<%= name %>_access.log;
     root        <%= root %>/media;
 
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
     expires     1y;
     autoindex   off;
 }
-<% end -%>
