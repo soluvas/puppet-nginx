@@ -4,7 +4,7 @@ server {
     access_log  <%= real_access_log %>;
     root        <%= root %>;
     
-    client_max_body_size     8M;
+    client_max_body_size     <%= client_max_body_size %>;
 #    client_body_temp_path  /tmp/data_client_temp;
     create_full_put_path     on;
     dav_access               user:rw group:rw all:r;
@@ -13,11 +13,15 @@ server {
         autoindex on;
 
         dav_methods           PUT DELETE MKCOL COPY MOVE;
-#        dav_ext_methods PROPFIND OPTIONS;
+#        dav_ext_methods PROPFIND OPTIONS; # not yet supported by Ubuntu 12.04's nginx
 
-#         limit_except  GET {
+         limit_except  GET {
+<% if write_user != '' -%>
+            auth_basic            on;
+            auth_basic_user_file  sites-htpasswd/<%= name %>.htpasswd;
+<% end -%>
 #             allow  127.0.0.1/24;
 #             deny   all;
-#         }
+         }
     }    
 }

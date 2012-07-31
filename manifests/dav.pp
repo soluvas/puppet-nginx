@@ -23,10 +23,13 @@
 #  }
 define nginx::dav(
   $root,
-  $ensure              = 'present',
-  $listen              = '80',
-  $server_name         = undef,
-  $access_log          = undef) {
+  $ensure               = 'present',
+  $listen               = '80',
+  $server_name          = undef,
+  $access_log           = undef,
+  $client_max_body_size = '8M',
+  $write_user           = '',
+  $write_password       = '') {
 
   $real_server_name = $server_name ? {
     undef   => $name,
@@ -38,8 +41,23 @@ define nginx::dav(
     default => $access_log,
   }
 
+  if $write_user != '' {
+  	file { "/etc/nginx/sites-htpasswd/${name}.htpasswd":
+  	  content => template('nginx/htpasswd.erb'),
+  	  owner   => 'root',
+  	  group   => 'root',
+  	  mode    => 0644,
+  	  require => File['/etc/nginx/sites-htpasswd'],
+  	}
+  } else {
+  	file { "/etc/nginx/sites-htpasswd/${name}.htpasswd":
+  	  ensure  => absent,
+  	}
+  }
+
   nginx::site { $name:
     ensure  => $ensure,
     content => template('nginx/dav.erb'),
   }
+
 }

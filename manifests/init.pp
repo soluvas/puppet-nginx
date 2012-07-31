@@ -84,4 +84,13 @@ class nginx(
     notify  => Service['nginx'],
   }
 
+  # Used by DAV authentication
+  file { '/etc/nginx/sites-htpasswd':
+    ensure  => directory,
+    mode    => 0644,
+    owner   => 'root',
+    group   => 'root',
+    require => Package['nginx'],
+  }
+
 }
