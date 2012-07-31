@@ -22,11 +22,15 @@ Create config directories :
 	* /etc/nginx/sites-available
 	* /etc/nginx/ssl
 
-Provide 4 definitions : 
+Provide 8 definitions : 
 	* nginx::config (http config snippet)
 	* nginx::site (http site)
 	* nginx::site_include (site includes)
 	* nginx::fcgi::site (fcgi php site)
+	* nginx::static
+	* nginx::magento_site
+	* nginx::drupal
+	* nginx::dav
 
 Templates:
 	- nginx.conf.erb => /etc/nginx/nginx.conf

@@ -13,13 +13,11 @@
 # * nginx/dav.erb
 #
 # Sample Usage :
-#  nginx::static { 'www.kreasiindonesia.com':
-#  	 server_name  => ['www.kreasiindonesia.com', 'kreasiindonesia.com',
-#                     'm.kreasiindonesia.com', 'www.m.kreasiindonesia.com',
-#                     'skin.kreasiindonesia.com', 'media.kreasiindonesia.com',
-#                     'js.kreasiindonesia.com',
-#                     'plus.kreasiindonesia.com', 'www.plus.kreasiindonesia.com'],
-#    root         => '/home/magento/www_maintenance',
+#  nginx::dav { "dav.berbatik.${::fqdn}":
+#    root           => "/home/${developer}/berbatik_dev/dav",
+#    write_user     => 'berbatik_dev',
+#    write_password => 'bippo',
+#    require        => File["/home/${developer}/berbatik_dev/dav"],
 #  }
 define nginx::dav(
   $root,
