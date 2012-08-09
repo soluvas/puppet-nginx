@@ -20,7 +20,6 @@ server {
     location / {
         index     <%= index %>; ## Allow a static html file to be shown first
         try_files $uri $uri/ @handler; ## If missing pass the URI to Magento's front handler
-        expires   1y; ## Assume all files are cachable
     }
     location @handler { ## Magento uses a common front handler
         rewrite / /index.php;
@@ -30,7 +29,6 @@ server {
     location /fb/ {
         index     <%= index %>; ## Allow a static html file to be shown first
         try_files $uri $uri/ @fbhandler; ## If missing pass the URI to Magento's front handler
-        expires   1y; ## Assume all files are cachable
     }
     location @fbhandler { ## Magento uses a common front handler
         rewrite /fb /fb/index.php;
@@ -111,7 +109,6 @@ server {
     location / {
         index     index.html index.php; ## Allow a static html file to be shown first
         try_files $uri $uri/ @handler; ## If missing pass the URI to Magento's front handler
-        expires   1y; ## Assume all files are cachable
     }
 
     location ~ /\. {
@@ -166,7 +163,19 @@ server {
     access_log  /var/log/nginx/<%= name %>_access.log;
     root        <%= root %>/js;
 
-    expires     1y;
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
+    expires     1m;
     autoindex   off;
 }
 
@@ -176,15 +185,40 @@ server {
     access_log  /var/log/nginx/<%= name %>_access.log;
     root        <%= root %>/skin;
 
-    expires     1y;
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
+    expires     1m;
     autoindex   off;
 }
 
 server {
+    # Be careful in aggregating CSS & JavaScript, it will get Expires: 1 year!
     listen      <%= listen %>;
     server_name media.<%= domain %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
     root        <%= root %>/media;
+
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
 
     expires     1y;
     autoindex   off;
