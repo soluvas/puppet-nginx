@@ -85,6 +85,9 @@ server {
         include                 includes/fastcgi_params.inc;
     }
 
+    proxy_read_timeout              900s;
+    proxy_send_timeout              900s;
+
 <% if include  != '' -%>
 <%include.each do |inc| %>
     include <%= inc %>;
