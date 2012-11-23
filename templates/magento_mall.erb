@@ -85,11 +85,16 @@ server {
         include                 includes/fastcgi_params.inc;
     }
 
+    proxy_read_timeout              900s;
+    proxy_send_timeout              900s;
+
     location <%= commerce_path %> {
         proxy_pass                      <%= commerce_uri %>;
         proxy_set_header                X-Real-IP $remote_addr;
         proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header                Host $http_host;
+        proxy_read_timeout              900s;
+        proxy_send_timeout              900s;
     }
 
 <% if include  != '' -%>
@@ -99,12 +104,23 @@ server {
 <% end -%>
 }
 
-<% if listen != '443' -%>
 server {
     listen      <%= listen %>;
     server_name <%= mobile_domain %> www.<%= mobile_domain %>;
     access_log  <%= real_access_log %>;
     root        <%= root %>;
+
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
 
     location / {
         index     index.html index.php; ## Allow a static html file to be shown first
@@ -223,4 +239,3 @@ server {
     expires     1y;
     autoindex   off;
 }
-<% end -%>

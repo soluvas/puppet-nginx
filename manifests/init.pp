@@ -20,11 +20,13 @@
 #   - nginx.conf.erb => /etc/nginx/nginx.conf
 #
 class nginx(
-  $user                = 'www-data',
-  $worker_processes    = 1,
-  $worker_connections  = 1024,
-  $ssl_certificate     = '',
-  $ssl_certificate_key = ''
+  $user                       = 'www-data',
+  $worker_processes           = 1,
+  $worker_connections         = 1024,
+  # nginx default is 512, Bippo hosting usually needs more
+  $server_names_hash_max_size = 1024,
+  $ssl_certificate            = '',
+  $ssl_certificate_key        = ''
 ) {
   $nginx_includes = '/etc/nginx/includes'
   $nginx_conf = '/etc/nginx/conf.d'
