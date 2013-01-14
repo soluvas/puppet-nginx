@@ -63,7 +63,7 @@ server {
 
 server {
     listen      <%= listen %>;
-    server_name js.<%= domain %>;
+    server_name jso.<%= domain %> js.<%= domain %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
 
     location / {
@@ -91,7 +91,7 @@ server {
 
 server {
     listen      <%= listen %>;
-    server_name skin.<%= domain %>;
+    server_name skino.<%= domain %> skin.<%= domain %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
     
     location / {
@@ -120,7 +120,7 @@ server {
 server {
     # Be careful in aggregating CSS & JavaScript, it will get Expires: 1 year!
     listen      <%= listen %>;
-    server_name img.<%= domain %>;
+    server_name imgo.<%= domain %> img.<%= domain %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
     
     location / {
