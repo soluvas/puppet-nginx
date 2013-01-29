@@ -1,0 +1,47 @@
+server {
+        listen       <%= listen %> ;
+
+        server_name  <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
+
+        access_log   <%= real_access_log %>;
+
+        root         <%= root %>;
+
+        autoindex    on;
+
+<% if listen == '443' %>
+        ssl  on;
+        ssl_certificate  <%= real_ssl_certificate %>;
+        ssl_certificate_key  <%= real_ssl_certificate_key %>;
+
+        ssl_session_timeout  <%= ssl_session_timeout %>;
+
+        ssl_protocols  SSLv2 SSLv3 TLSv1;
+        ssl_ciphers  ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+        ssl_prefer_server_ciphers   on;
+<% end -%>
+        location / {
+		index   <%= index %>;
+        }
+	location /shop/ {
+# RewriteRule ^category/([0-9]+)/(.*).html catalog-category.php?cat_id=$1&cat_name=$2&%{QUERY_STRING}
+		rewrite category/([0-9]+)/(.*).html /shop/catalog-category.php?cat_id=$1&cat_name=$2 ;
+# RewriteRule ^product-details/(.*)/([0-9]+)/(.*).html product-details.php?cat_id=$1&prod_id=$2&%{QUERY_STRING}
+		rewrite product-details/(.*)/([0-9]+)/(.*).html /shop/product-details.php?cat_id=$1&prod_id=$2 ;
+	}
+
+	location ~ \.php$ {
+		fastcgi_pass <%= fastcgi_pass %>;
+		fastcgi_index index.php;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		fastcgi_param APPLICATION_ENV development;
+		include /etc/nginx/includes/fastcgi_params.inc;
+	}
+
+	location ~ /\.ht {
+                deny  all;
+        }
+
+<% if include  != '' %>	<%include.each do |inc| %>include <%= inc %>;
+	<% end -%><% end -%>
+}
