@@ -29,6 +29,10 @@ server {
 # RewriteRule ^product-details/(.*)/([0-9]+)/(.*).html product-details.php?cat_id=$1&prod_id=$2&%{QUERY_STRING}
 		rewrite product-details/(.*)/([0-9]+)/(.*).html /shop/product-details.php?cat_id=$1&prod_id=$2 ;
 	}
+        location /shop/admin_content/ {
+		index   index.html index.php;
+		try_files $uri $uri/ /shop/admin_content/index.php?q=$uri&$args ;
+        }
 
 	location ~ \.php$ {
 		fastcgi_pass <%= fastcgi_pass %>;
