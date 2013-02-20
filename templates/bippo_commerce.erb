@@ -18,12 +18,12 @@ server {
 <% end -%>
 
     location / {
-        proxy_pass                      <%= commerce_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/;
+        proxy_pass                      <%= commerce_uri %>soluvasweb/;
         proxy_set_header                X-Real-IP $remote_addr;
         proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header                Host $http_host;
-        proxy_redirect                  http://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_commerce/ /;
-        proxy_redirect                  https://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_commerce/ /;
+        proxy_redirect                  http://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/soluvasweb/ /;
+        proxy_redirect                  https://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/soluvasweb/ /;
 	}
 
 #    FIXME: doesn't work
@@ -32,7 +32,7 @@ server {
 #        try_files $uri $uri/ @commerce; ## If missing pass the URI to Magento's front handler
 #    }
 #    handler @commerce {
-#        proxy_pass                      <%= commerce_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/;
+#        proxy_pass                      <%= commerce_uri %>soluvasweb/;
 #        proxy_set_header                X-Real-IP $remote_addr;
 #        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
 #        proxy_set_header                Host $http_host;
