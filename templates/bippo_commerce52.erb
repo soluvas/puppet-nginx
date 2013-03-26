@@ -1,0 +1,134 @@
+server {
+    listen      <%= listen %>;
+    server_name <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
+    access_log  <%= real_access_log %>;
+    client_max_body_size        8M;
+
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
+    location / {
+        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/app/;
+        proxy_set_header                X-Real-IP $remote_addr;
+        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header                Host $http_host;
+        proxy_redirect                  http://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_commerce/app/ /;
+        proxy_redirect                  https://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_commerce/app/ /;
+	}
+
+#    FIXME: doesn't work
+#    location / {
+#        index     <%= index %>; ## Allow a static html file to be shown first
+#        try_files $uri $uri/ @commerce; ## If missing pass the URI to Magento's front handler
+#    }
+#    handler @commerce {
+#        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/;
+#        proxy_set_header                X-Real-IP $remote_addr;
+#        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+#        proxy_set_header                Host $http_host;
+#    }
+ 
+    # TODO: Facebook Store View
+
+    location ~ /\. {
+        deny  all;
+    }
+
+	location /api/ {
+        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/api/;
+        proxy_set_header                X-Real-IP $remote_addr;
+        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header                Host $http_host;
+	}
+
+<% if include  != '' -%>
+<%include.each do |inc| %>
+    include <%= inc %>;
+<% end -%>
+<% end -%>
+}
+
+# TODO: Mobile site
+
+server {
+    listen      <%= listen %>;
+    server_name jso.<%= domain %> js.<%= domain %>;
+    access_log  /var/log/nginx/<%= name %>_access.log;
+
+    root <%= home %>/<%= tenant_id %>_<%= tenant_env %>/js;
+
+    gzip_http_version   1.0;         # make it work with CloudFront
+
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
+    expires     1y;
+    autoindex   off;
+}
+
+server {
+    listen      <%= listen %>;
+    server_name skino.<%= domain %> skin.<%= domain %>;
+    access_log  /var/log/nginx/<%= name %>_access.log;
+    
+    root <%= home %>/<%= tenant_id %>_<%= tenant_env %>/skin;
+
+    gzip_http_version   1.0;         # make it work with CloudFront
+
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
+    expires     1y;
+    autoindex   off;
+}
+
+server {
+    # Be careful in aggregating CSS & JavaScript, it will get Expires: 1 year!
+    listen      <%= listen %>;
+    server_name imgo.<%= domain %> img.<%= domain %>;
+    access_log  /var/log/nginx/<%= name %>_access.log;
+    
+    root <%= home %>/<%= tenant_id %>_<%= tenant_env %>/img;
+
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
+    expires     1y;
+    autoindex   off;
+}
