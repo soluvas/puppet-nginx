@@ -23,6 +23,7 @@ server {
         proxy_set_header                Host $http_host;
         proxy_redirect                  http://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_commerce/app/ /;
         proxy_redirect                  https://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_commerce/app/ /;
+	proxy_cookie_path		/<%= tenant_id %>_<%= tenant_env %>_commerce/ /;
 	}
 
 #    FIXME: doesn't work
