@@ -44,6 +44,19 @@ class nginx(
     key_server  => 'keyserver.ubuntu.com',
     include_src => false,
   }
+#  apt::source { nginx:
+#    location    => 'http://ppa.launchpad.net/nginx/development/ubuntu',
+#    release     => $lsbdistcodename ? {
+#      /precise|maya/  => 'precise',
+#      /quantal|nadia/ => 'quantal',
+#      /raring|olivia/ => 'raring',
+#      default           => fail(inline_template("Unknown lsbdistcodename: <%= lsbdistcodename %>")),
+#    },
+#    repos       => 'main',
+#    key         => 'C300EE8C',
+#    key_server  => 'keyserver.ubuntu.com',
+#    include_src => false,
+#  }
   if ! defined(Package['nginx']) {
     package { 'nginx':
       ensure  => installed,
