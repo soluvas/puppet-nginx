@@ -1,7 +1,6 @@
 define nginx::quikdo_hub(
   $home,
   $domain,
-  $mobile_domain,
   $ensure              = 'present',
   $index               = 'index.html index.php',
   $include             = '',
