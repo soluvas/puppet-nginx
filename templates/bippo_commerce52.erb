@@ -74,14 +74,17 @@ server {
 <% end -%>
 }
 
-# TODO: Mobile site
-
 server {
     listen      <%= listen %>;
     server_name jso.<%= domain %> js.<%= domain %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
 
-    root <%= home %>/<%= tenant_id %>_<%= tenant_env %>/js;
+    location / {
+	proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/js/;
+	proxy_set_header                X-Real-IP $remote_addr;
+	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+	proxy_pass_header               Host;
+    }
 
     gzip_http_version   1.0;         # make it work with CloudFront
 
@@ -106,7 +109,12 @@ server {
     server_name skino.<%= domain %> skin.<%= domain %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
     
-    root <%= home %>/<%= tenant_id %>_<%= tenant_env %>/skin;
+    location / {
+	proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/skin/;
+	proxy_set_header                X-Real-IP $remote_addr;
+	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+	proxy_pass_header               Host;
+    }
 
     gzip_http_version   1.0;         # make it work with CloudFront
 
@@ -133,7 +141,12 @@ server {
     server_name imgo.<%= domain %> img.<%= domain %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
     
-    root <%= home %>/<%= tenant_id %>_<%= tenant_env %>/img;
+    location / {
+	proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/img/;
+	proxy_set_header                X-Real-IP $remote_addr;
+	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+	proxy_pass_header               Host;
+    }
 
 <% if listen == '443' -%>
     ssl                         on;
