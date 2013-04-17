@@ -1,0 +1,66 @@
+server {
+    listen      <%= listen %>;
+    server_name <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
+    access_log  <%= real_access_log %>;
+    client_max_body_size        8M;
+
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
+    location / {
+        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_hub/app/;
+        proxy_set_header                X-Real-IP $remote_addr;
+        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header                Host $http_host;
+        proxy_redirect                  http://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_hub/app/ /;
+        proxy_redirect                  https://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_hub/app/ /;
+	proxy_cookie_path		/<%= tenant_id %>_<%= tenant_env %>_hub/ /;
+	}
+
+    location ~ /\. {
+        deny  all;
+    }
+
+	location /api/ {
+        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_hub/api/;
+        proxy_set_header                X-Real-IP $remote_addr;
+        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header                Host $http_host;
+	}
+
+	location /img/ {
+        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_hub/img/;
+        proxy_set_header                X-Real-IP $remote_addr;
+        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header                Host $http_host;
+	}
+
+	location /js/ {
+        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_hub/js/;
+        proxy_set_header                X-Real-IP $remote_addr;
+        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header                Host $http_host;
+	}
+
+	location /skin/ {
+        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_hub/skin/;
+        proxy_set_header                X-Real-IP $remote_addr;
+        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header                Host $http_host;
+	}
+
+<% if include  != '' -%>
+<%include.each do |inc| %>
+    include <%= inc %>;
+<% end -%>
+<% end -%>
+}
