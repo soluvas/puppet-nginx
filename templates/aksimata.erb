@@ -17,13 +17,13 @@ server {
 <% end -%>
 
     location / {
-        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/app/;
+        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_aksimata/app/;
         proxy_set_header                X-Real-IP $remote_addr;
         proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_pass_header               Host;
         # below are workaround... why?!?!
-        #proxy_redirect                  http://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_commerce/app/ /;
-        #proxy_redirect                  https://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_commerce/app/ /;
+        #proxy_redirect                  http://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_aksimata/app/ /;
+        #proxy_redirect                  https://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_aksimata/app/ /;
         proxy_cookie_domain		localhost <%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>;
 	proxy_cookie_path		/<%= tenant_id %>_<%= tenant_env %>_aksimata/ /;
 
@@ -47,7 +47,7 @@ server {
 #        try_files $uri $uri/ @commerce; ## If missing pass the URI to Magento's front handler
 #    }
 #    handler @commerce {
-#        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/;
+#        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_aksimata/;
 #        proxy_set_header                X-Real-IP $remote_addr;
 #        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
 #        proxy_set_header                Host $http_host;
@@ -60,11 +60,11 @@ server {
     }
 
     location /api/ {
-        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/api/;
+        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_aksimata/api/;
         proxy_set_header                X-Real-IP $remote_addr;
         proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_pass_header                Host;
-	proxy_cookie_path		/<%= tenant_id %>_<%= tenant_env %>_commerce/api/ /;
+	proxy_cookie_path		/<%= tenant_id %>_<%= tenant_env %>_aksimata/api/ /;
     }
 
 <% if include  != '' -%>
@@ -80,7 +80,7 @@ server {
     access_log  /var/log/nginx/<%= name %>_access.log;
 
     location / {
-	proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/js/;
+	proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_aksimata/js/;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
 	proxy_pass_header               Host;
@@ -114,7 +114,7 @@ server {
     access_log  /var/log/nginx/<%= name %>_access.log;
     
     location / {
-	proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/skin/;
+	proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_aksimata/skin/;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
 	proxy_pass_header               Host;
@@ -150,7 +150,7 @@ server {
     access_log  /var/log/nginx/<%= name %>_access.log;
     
     location / {
-	proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/img/;
+	proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_aksimata/img/;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
 	proxy_pass_header               Host;
