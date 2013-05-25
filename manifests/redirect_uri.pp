@@ -1,14 +1,15 @@
-# Define: nginx::redirect
+# Define: nginx::redirect_uri
 #
-# Create a redirect site config from template using parameters.
+# Create a redirect site config preserving request URI,
+# useful to map e.g. http://tuneeca.com/hendy to http://www.tuneeca.com/hendy
 #
 # Parameters :
 # * ensure: typically set to "present" or "absent". Defaults to "present"
-# * server_name : server_name directive (an array)
+# * server_name : server_name directive (an array) -- optional
 # * status : redirect | permanent
 # * listen : address/port the server listen to. Defaults to 80.
 # * access_log : custom acces logs. Defaults to /var/log/nginx/$name_access.log
-# * dest : Destination URI
+# * dest : Destination URI, do not end with slash!
 #
 # Templates :
 # * nginx/redirect_site.erb
@@ -20,7 +21,7 @@
 #    status        => permanent,
 #  }
 #
-define nginx::redirect(
+define nginx::redirect_uri(
   $dest,
   $ensure              = 'present',
   $listen              = '80',
@@ -40,7 +41,7 @@ define nginx::redirect(
 
   nginx::site { $name:
     ensure  => $ensure,
-    content => template('nginx/redirect_site.erb'),
+    content => template('nginx/redirect_uri.erb'),
   }
 }
 
