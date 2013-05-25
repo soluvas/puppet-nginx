@@ -15,9 +15,8 @@
 # * nginx/redirect_site.erb
 #
 # Sample Usage :
-#  nginx::redirect { 'plus.elektronikrumah.com':
-#  	server_name   => ['plus.elektronikrumah.com', 'www.plus.elektronikrumah.com'],
-#    dest          => 'https://plus.google.com/106343484564841395454',
+#  nginx::redirect { 'aksimata.com':
+#    dest          => 'http://www.aksimata.com',
 #    status        => permanent,
 #  }
 #

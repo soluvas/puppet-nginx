@@ -74,6 +74,14 @@ server {
 <% end -%>
 }
 
+# no-www to www redirect
+server {
+    listen      <%= listen %>;
+    server_name <%= domain %>;
+    access_log  <%= real_access_log %>;
+    rewrite     ^ http://www.<%= domain %>$request_uri permanent;
+}
+
 server {
     listen      <%= listen %>;
     server_name jso.<%= domain %> js.<%= domain %>;
