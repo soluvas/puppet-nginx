@@ -1,0 +1,86 @@
+server {
+    listen      <%= listen %>;
+    server_name <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
+    access_log  <%= real_access_log %>;
+    root        <%= root %>;
+
+<% if listen == '443' -%>
+    ssl                         on;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
+        autoindex    on;
+
+        location / {
+		index   index.html index.php;
+        }
+
+	#page is my default controller, you will need to change it to yours   
+	if ($request_uri ~* ^(/search(/index)?|/index(.php)?)/?$)
+	{
+	    rewrite ^(.*)$ / permanent;
+	}
+
+	# removes trailing "index" from all controllers
+	if ($request_uri ~* index/?$)
+	{
+	    rewrite ^/(.*)/index/?$ /$1 permanent;
+	}
+
+	# removes trailing slashes (prevents SEO duplicate content issues)
+	if (!-d $request_filename)
+	{
+	    rewrite ^/(.+)/$ /$1 permanent;
+	}
+
+	# removes access to "system" folder, also allows a "System.php" controller
+	if ($request_uri ~* ^/system)
+	{
+	    rewrite ^/(.*)$ /index.php?/$1 last;
+	    break;
+	}
+
+	# unless the request is for a valid file (image, js, css, etc.), send to bootstrap
+	if (!-e $request_filename)
+	{
+	    rewrite ^/(.*)$ /index.php?/$1 last;
+	    break;
+	}
+
+	# This code was found here : http://kbeezie.com/view/php-self-path-nginx/
+	# Thanks to KBeezie !!!
+	# It makes this configuration to be Moodle 2.x compliant ;)
+	 
+	fastcgi_intercept_errors on;
+	# this will allow Nginx to intercept 4xx/5xx error codes
+	# Nginx will only intercept if there are error page rules defined
+	# -- This is better placed in the http {} block as a default
+	# -- so that in the case of wordpress, you can turn it off specifically
+	# -- in that virtual host's server block
+	 
+	location ~ \.php {
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		# A handy function that became available in 0.7.31 that breaks down 
+		# The path information based on the provided regex expression
+		# This is handy for requests such as file.php/some/paths/here/ 
+
+		include                 includes/fastcgi_params.inc;
+		fastcgi_param  SCRIPT_FILENAME    $document_root$fastcgi_script_name;
+	 
+		fastcgi_pass	<%= fastcgi_pass %>; # this value depends on your configuration, can be unix:/var/run/php5-fpm.sock; for example
+		fastcgi_index	index.php;
+	}
+
+<% if include  != '' -%>
+<%include.each do |inc| %>
+    include <%= inc %>;
+<% end -%>
+<% end -%>
+}
