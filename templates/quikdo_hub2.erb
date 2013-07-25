@@ -25,6 +25,10 @@ server {
         #proxy_redirect                  https://$subdomain.<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_hub/app/t/$subdomain/<%= tenant_env %>/ /;
 	#proxy_cookie_path		/<%= tenant_id %>_<%= tenant_env %>_hub/ /;
 
+	<% if listen == '443' -%>
+        proxy_redirect                  http://$subdomain.<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/ https://$subdomain.<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/;
+	<% end -%>
+
 	# disable buffering for Comet requests
 	# Atmosphere should send X-Accel-Buffering: no instead: http://wiki.nginx.org/HttpProxyModule#proxy_buffering
 	#proxy_buffering      off;
@@ -41,41 +45,6 @@ server {
 
     location ~ /\. {
         deny  all;
-    }
-
-	location /api/ {
-        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_hub/api/;
-        proxy_set_header                X-Real-IP $remote_addr;
-        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header                Host $http_host;
-	}
-
-	location /img/ {
-        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_hub/img/;
-        proxy_set_header                X-Real-IP $remote_addr;
-        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header                Host $http_host;
-	}
-
-	location /js/ {
-        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_hub/js/;
-        proxy_set_header                X-Real-IP $remote_addr;
-        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header                Host $http_host;
-	}
-
-	location /skin/ {
-        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_hub/skin/;
-        proxy_set_header                X-Real-IP $remote_addr;
-        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header                Host $http_host;
-	}
-	
-    location /wicket/ {
-        proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_hub/app/wicket/;
-        proxy_set_header                X-Real-IP $remote_addr;
-        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header                Host $http_host;
     }
 
 <% if include  != '' -%>
