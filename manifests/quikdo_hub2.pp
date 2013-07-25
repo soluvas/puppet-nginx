@@ -49,7 +49,7 @@ define nginx::quikdo_hub2(
 
   nginx::site { $name:
     ensure  => $ensure,
-    content => template('nginx/quikdo_hub.erb'),
+    content => template('nginx/quikdo_hub2.erb'),
   }
 }
 
