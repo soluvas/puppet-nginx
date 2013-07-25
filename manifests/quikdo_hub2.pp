@@ -1,4 +1,4 @@
-define nginx::quikdo_hub(
+define nginx::quikdo_hub2(
   $home,
   $domain,
   $ensure              = 'present',
