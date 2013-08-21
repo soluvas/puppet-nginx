@@ -3,6 +3,7 @@ server {
     server_name <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
     access_log  <%= real_access_log %>;
     root        <%= root %>;
+    index index.html index.php index.htm;
 
 <% if listen == '443' -%>
     ssl                         on;
@@ -22,10 +23,12 @@ server {
 	location ~* \.php$ {
 		include                 includes/fastcgi_params.inc;
 		fastcgi_pass	<%= fastcgi_pass %>; # this value depends on your configuration, can be unix:/var/run/php5-fpm.sock; for example
+		fastcgi_index		index.php;
+		fastcgi_param SCRIPT_FILENAME	$document_root$fastcgi_script_name;
 	}
   
 	location / {
-		try_files $uri $uri/ /index.php
+		try_files $uri $uri/ /index.php;
 	}
 
 <% if include  != '' -%>

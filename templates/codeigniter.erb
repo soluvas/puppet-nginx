@@ -3,7 +3,7 @@ server {
     server_name <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
     access_log  <%= real_access_log %>;
     root        <%= root %>;
-    index 	index.html index.php index.htm;
+    index	index.html index.php index.htm;
 <% if listen == '443' -%>
     ssl                         on;
     ssl_certificate             <%= real_ssl_certificate %>;
