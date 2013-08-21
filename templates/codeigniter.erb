@@ -3,7 +3,7 @@ server {
     server_name <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
     access_log  <%= real_access_log %>;
     root        <%= root %>;
-
+    index 	index.html index.php index.htm;
 <% if listen == '443' -%>
     ssl                         on;
     ssl_certificate             <%= real_ssl_certificate %>;
@@ -19,51 +19,14 @@ server {
         autoindex    on;
 
         location / {
-		index   index.html index.php;
+	    try_files $uri $uri/ /index.php;
         }
 
-	#page is my default controller, you will need to change it to yours   
-	if ($request_uri ~* ^(/search(/index)?|/index(.php)?)/?$)
-	{
-	    rewrite ^(.*)$ / permanent;
+	# set expiration of assets to MAX for caching
+	location ~* \.(ico|css|js|gif|jpe?g|png)(\?[0-9]+)?$ {
+	    expires max;
+	    log_not_found off;
 	}
-
-	# removes trailing "index" from all controllers
-	if ($request_uri ~* index/?$)
-	{
-	    rewrite ^/(.*)/index/?$ /$1 permanent;
-	}
-
-	# removes trailing slashes (prevents SEO duplicate content issues)
-	if (!-d $request_filename)
-	{
-	    rewrite ^/(.+)/$ /$1 permanent;
-	}
-
-	# removes access to "system" folder, also allows a "System.php" controller
-	if ($request_uri ~* ^/system)
-	{
-	    rewrite ^/(.*)$ /index.php?/$1 last;
-	    break;
-	}
-
-	# unless the request is for a valid file (image, js, css, etc.), send to bootstrap
-	if (!-e $request_filename)
-	{
-	    rewrite ^/(.*)$ /index.php?/$1 last;
-	    break;
-	}
-
-	# This code was found here : http://kbeezie.com/view/php-self-path-nginx/
-	# Thanks to KBeezie !!!
-	# It makes this configuration to be Moodle 2.x compliant ;)
-	 
-	fastcgi_intercept_errors on;
-	# this will allow Nginx to intercept 4xx/5xx error codes
-	# Nginx will only intercept if there are error page rules defined
-	# -- This is better placed in the http {} block as a default
-	# -- so that in the case of wordpress, you can turn it off specifically
-	# -- in that virtual host's server block
 	 
 	location ~ \.php {
 		fastcgi_split_path_info ^(.+\.php)(/.+)$;
