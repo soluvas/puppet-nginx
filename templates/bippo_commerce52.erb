@@ -4,6 +4,16 @@ server {
     access_log  <%= real_access_log %>;
     client_max_body_size        8M;
 
+    error_page 404 =404 /maintenance.html;
+    error_page 502 =502 /maintenance.html;
+    error_page 503 =503 /maintenance.html;
+    error_page 504 =504 /maintenance.html;
+    location = /maintenance.html {
+        internal;
+        root /usr/share/nginx/www;
+        allow all;
+    }
+
 <% if listen == '443' -%>
     ssl                         on;
     ssl_certificate             <%= real_ssl_certificate %>;
