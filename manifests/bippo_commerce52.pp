@@ -54,6 +54,8 @@ define nginx::bippo_commerce52(
   $appserver_uri       = 'http://localhost:8080/',
   $tenant_id,
   $tenant_env,
+  $write_user           = '',       # it's still READ access, just variable naming in htpasswd
+  $write_password       = ''
 ) {
 
   $real_server_name = $server_name ? {
@@ -86,6 +88,20 @@ define nginx::bippo_commerce52(
   $real_ssl_certificate_key = $ssl_certificate_key ? {
     undef   => "/etc/nginx/ssl/${name}.key",
     default => $ssl_certificate_key,
+  }
+
+  if $write_user != '' {
+  	file { "/etc/nginx/sites-htpasswd/${name}.htpasswd":
+  	  content => template('nginx/htpasswd.erb'),
+  	  owner   => 'root',
+  	  group   => 'root',
+  	  mode    => 0644,
+  	  require => File['/etc/nginx/sites-htpasswd'],
+  	}
+  } else {
+  	file { "/etc/nginx/sites-htpasswd/${name}.htpasswd":
+  	  ensure  => absent,
+  	}
   }
 
   nginx::site { $name:

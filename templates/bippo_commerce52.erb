@@ -77,6 +77,11 @@ server {
 	proxy_cookie_path		/<%= tenant_id %>_<%= tenant_env %>_commerce/api/ /;
     }
 
+<% if write_user != '' -%>
+            auth_basic            on;
+            auth_basic_user_file  sites-htpasswd/<%= name %>.htpasswd;
+<% end -%>
+
 <% if include  != '' -%>
 <%include.each do |inc| %>
     include <%= inc %>;
