@@ -31,6 +31,7 @@ class nginx(
   $nginx_includes = '/etc/nginx/includes'
   $nginx_conf = '/etc/nginx/conf.d'
 
+# Nginx stable from nginx.org itself, but has strange layout
 #   apt::source { nginx:
 #     location    => 'http://nginx.org/packages/ubuntu/',
 #     release     => $lsbdistcodename ? {
@@ -44,12 +45,15 @@ class nginx(
 #     key_server  => 'keyserver.ubuntu.com',
 #     include_src => false,
 #   }
+
+# Nginx development, also has strange layout, use Chris Lea's instead if you want devel
 #  apt::source { nginx:
 #    location    => 'http://ppa.launchpad.net/nginx/development/ubuntu',
 #    release     => $lsbdistcodename ? {
 #      /precise|maya/  => 'precise',
 #      /quantal|nadia/ => 'quantal',
 #      /raring|olivia/ => 'raring',
+#      /saucy|petra/   => 'saucy',
 #      default           => fail(inline_template("Unknown lsbdistcodename: <%= lsbdistcodename %>")),
 #    },
 #    repos       => 'main',
@@ -57,20 +61,24 @@ class nginx(
 #    key_server  => 'keyserver.ubuntu.com',
 #    include_src => false,
 #  }
-  apt::source { nginx:
-    location    => 'http://ppa.launchpad.net/chris-lea/nginx-devel/ubuntu',
-    release     => $lsbdistcodename ? {
-      /precise|maya/  => 'precise',
-      /quantal|nadia/ => 'quantal',
-      /raring|olivia/ => 'raring',
-      default           => fail(inline_template("Unknown lsbdistcodename: <%= lsbdistcodename %>")),
-    },
-    repos       => 'main',
-    key         => 'C7917B12',
-    key_server  => 'keyserver.ubuntu.com',
-    include_src => false,
-  }
-  if ! defined(Package['nginx']) {
+
+# Chris Lea's, but 13.10 already has nginx 1.5.3 !
+#  apt::source { nginx:
+#    location    => 'http://ppa.launchpad.net/chris-lea/nginx-devel/ubuntu',
+#    release     => $lsbdistcodename ? {
+#      /precise|maya/  => 'precise',
+#      /quantal|nadia/ => 'quantal',
+#      /raring|olivia/ => 'raring',
+#      /saucy|petra/   => 'saucy',
+#      default         => fail(inline_template("Unknown lsbdistcodename: <%= lsbdistcodename %>")),
+#    },
+#    repos       => 'main',
+#    key         => 'C7917B12',
+#    key_server  => 'keyserver.ubuntu.com',
+#    include_src => false,
+#  }
+
+if ! defined(Package['nginx']) {
     package { 'nginx':
       name    => 'nginx-extras',
       ensure  => installed,
