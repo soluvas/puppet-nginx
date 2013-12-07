@@ -82,7 +82,7 @@ if ! defined(Package['nginx']) {
     package { 'nginx':
       name    => 'nginx-extras',
       ensure  => installed,
-      require => Apt::Source['nginx'],
+#      require => Apt::Source['nginx'],
     }
   }
 
