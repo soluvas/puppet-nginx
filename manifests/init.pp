@@ -31,13 +31,15 @@ class nginx(
   $nginx_includes = '/etc/nginx/includes'
   $nginx_conf = '/etc/nginx/conf.d'
 
-# Nginx stable from nginx.org itself, but has strange layout
+# Nginx stable from nginx.org itself, but has strange layout.
+# as of 9 Dec 2013, saucy packages isn't available
 #   apt::source { nginx:
 #     location    => 'http://nginx.org/packages/ubuntu/',
 #     release     => $lsbdistcodename ? {
 #       /precise|maya/  => 'precise',
 #       /quantal|nadia/ => 'quantal',
 #       /raring|olivia/ => 'raring',
+#      /saucy|petra/   => 'saucy',
 #       default           => fail(inline_template("Unknown lsbdistcodename: <%= lsbdistcodename %>")),
 #     },
 #     repos       => 'nginx',
@@ -62,7 +64,7 @@ class nginx(
 #    include_src => false,
 #  }
 
-# Chris Lea's, but 13.10 already has nginx 1.5.3 !
+# Chris Lea's, but 13.10 already has nginx 1.4.1 (which segfaults), nginx 1.4.3 from nginx.org works
 #  apt::source { nginx:
 #    location    => 'http://ppa.launchpad.net/chris-lea/nginx-devel/ubuntu',
 #    release     => $lsbdistcodename ? {
