@@ -110,7 +110,7 @@ server {
     }
 
     location /tenant_common {
-	root <%= home %>/<%= tenant_id %>_<%= tenant_env %>/img;
+	root <%= home %>/<%= tenant_id %>_<%= tenant_env %>/js;
     }
 
     gzip_http_version   1.0;         # make it work with CloudFront

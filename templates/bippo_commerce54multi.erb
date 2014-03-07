@@ -1,6 +1,6 @@
 server {
     listen      <%= listen %>;
-    server_name <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
+    server_name ~^www\.(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
     access_log  <%= real_access_log %>;
     client_max_body_size        8M;
 
@@ -27,15 +27,10 @@ server {
 <% end -%>
 
     location / {
-        proxy_pass                      http://<%= domain %>:<%= appserver_port %>/;
+        proxy_pass                      <%= appserver_uri %> ;
         proxy_set_header                X-Real-IP $remote_addr;
         proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_pass_header               Host;
-        # below are workaround... why?!?!
-        #proxy_redirect                  http://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_commerce/app/ /;
-        #proxy_redirect                  https://<%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>/<%= tenant_id %>_<%= tenant_env %>_commerce/app/ /;
-        proxy_cookie_domain		localhost <%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>;
-	proxy_cookie_path		/<%= tenant_id %>_<%= tenant_env %>_commerce/ /;
+        proxy_set_header                Host $http_host; # cannot use proxy_pass_header here because then it will use the appserver_uri's
 
 	# disable buffering for Comet requests
 	# Atmosphere should send X-Accel-Buffering: no instead: http://wiki.nginx.org/HttpProxyModule#proxy_buffering
@@ -51,30 +46,8 @@ server {
         proxy_set_header                Connection $http_connection;
     }
 
-#    FIXME: doesn't work
-#    location / {
-#        index     <%= index %>; ## Allow a static html file to be shown first
-#        try_files $uri $uri/ @commerce; ## If missing pass the URI to Magento's front handler
-#    }
-#    handler @commerce {
-#        proxy_pass                      http://<%= domain %>:<%= appserver_port %>/;
-#        proxy_set_header                X-Real-IP $remote_addr;
-#        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-#        proxy_set_header                Host $http_host;
-#    }
- 
-    # TODO: Facebook Store View
-
     location ~ /\. {
         deny  all;
-    }
-
-    location /api/ {
-        proxy_pass                      http://<%= domain %>:<%= appserver_port %>/api/;
-        proxy_set_header                X-Real-IP $remote_addr;
-        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_pass_header                Host;
-	proxy_cookie_path		/<%= tenant_id %>_<%= tenant_env %>_commerce/api/ /;
     }
 
 <% if write_user != '' -%>
@@ -92,25 +65,25 @@ server {
 # no-www to www redirect
 server {
     listen      <%= listen %>;
-    server_name <%= domain %>;
+    server_name ~^(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
     access_log  <%= real_access_log %>;
-    rewrite     ^ http://www.<%= domain %>$request_uri permanent;
+    rewrite     ^ http://www.$subdomain.<%= real_server_name %>$request_uri permanent;
 }
 
 server {
     listen      <%= listen %>;
-    server_name jso.<%= domain %> js.<%= domain %>;
+    server_name ~^(jso|js)\.(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
     access_log  /var/log/nginx/<%= name %>_access.log;
 
     location / {
-	proxy_pass                      http://<%= domain %>:<%= appserver_port %>/js/;
+	proxy_pass                      <%= appserver_uri %>/js/ ;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-	proxy_pass_header               Host;
+	proxy_set_header                Host $subdomain.<%= real_server_name %>;
     }
 
     location /tenant_common {
-	root <%= home %>/<%= tenant_id %>_<%= tenant_env %>/js;
+	root <%= home %>/$subdomain/js;
     }
 
     gzip_http_version   1.0;         # make it work with CloudFront
@@ -133,18 +106,18 @@ server {
 
 server {
     listen      <%= listen %>;
-    server_name skino.<%= domain %> skin.<%= domain %>;
+    server_name ~^(skino|skin)\.(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
     access_log  /var/log/nginx/<%= name %>_access.log;
-    
+
     location / {
-	proxy_pass                      http://<%= domain %>:<%= appserver_port %>/skin/;
+	proxy_pass                      <%= appserver_uri %>/skin/ ;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-	proxy_pass_header               Host;
+	proxy_set_header                Host $subdomain.<%= real_server_name %>;
     }
 
     location /tenant_common {
-	root <%= home %>/<%= tenant_id %>_<%= tenant_env %>/skin;
+	root <%= home %>/$subdomain/skin;
     }
 
     gzip_http_version   1.0;         # make it work with CloudFront
@@ -169,18 +142,18 @@ server {
 server {
     # Be careful in aggregating CSS & JavaScript, it will get Expires: 1 year!
     listen      <%= listen %>;
-    server_name imgo.<%= domain %> img.<%= domain %>;
+    server_name ~^(imgo|img)\.(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
     access_log  /var/log/nginx/<%= name %>_access.log;
-    
+
     location / {
-	proxy_pass                      http://<%= domain %>:<%= appserver_port %>/img/;
+	proxy_pass                      <%= appserver_uri %>/img/ ;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-	proxy_pass_header               Host;
+	proxy_set_header                Host $subdomain.<%= real_server_name %>;
     }
 
     location /tenant_common {
-	root <%= home %>/<%= tenant_id %>_<%= tenant_env %>/img;
+	root <%= home %>/$subdomain/img;
     }
 
 <% if listen == '443' -%>
