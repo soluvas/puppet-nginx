@@ -54,8 +54,9 @@ define nginx::bippo_commerce52(
   $appserver_uri       = 'http://localhost:8080/',
   $tenant_id,
   $tenant_env,
-  $write_user           = '',       # it's still READ access, just variable naming in htpasswd
-  $write_password       = ''
+  $maintenance_root    = '/usr/share/nginx/www',
+  $write_user          = '',       # it's still READ access, just variable naming in htpasswd
+  $write_password      = ''
 ) {
 
   $real_server_name = $server_name ? {
