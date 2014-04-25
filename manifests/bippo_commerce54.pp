@@ -19,22 +19,14 @@
 # Templates :
 # * nginx/magento_mall.erb
 #
-# Sample Usage :
+# Sample Usage - Production :
 #
-#   # Bippo Commerce 5.0 for Berbatik
-#   nginx::dav { "dav.berbatik5.${::fqdn}":
-#     root           => "/home/${developer}/berbatik_dev/dav",
-#     write_user     => 'berbatik_dev',
-#     write_password => 'bippo',
-#     require        => File["/home/${developer}/berbatik_dev/dav"],
-#   }
-#   nginx::bippo_commerce54 { "www.berbatik5.${::fqdn}":
-#     root          => "/home/${developer}/berbatik_dev/commerce/www",
-#     domain        => "berbatik5.${::fqdn}",
-#     server_name   => ["www.berbatik5.${::fqdn}", "berbatik5.${::fqdn}"],
-#     appserver_uri => 8080,
-#     tenant_id     => 'berbatik',
-#     tenant_env    => 'dev',
+#   # Ingga Bia
+#   nginx::bippo_commerce54 { "www.inggabia.com":
+#     home             => "/home/bippoapp",
+#     domain           => "inggabia.com",
+#     appserver_uri    => 'http://localhost:8204/',
+#     maintenance_root => '/home/bippoapp/bipporeg_commerce_prd/inggabia/common/maintenance'
 #   }
 #
 define nginx::bippo_commerce54(
@@ -52,6 +44,7 @@ define nginx::bippo_commerce54(
   $appserver_uri       = 'http://localhost:8080/',
   $tenant_id,
   $tenant_env,
+  $maintenance_root    = '/usr/share/nginx/www',
   $write_user           = '',       # it's still READ access, just variable naming in htpasswd
   $write_password       = ''
 ) {

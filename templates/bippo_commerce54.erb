@@ -10,7 +10,7 @@ server {
     error_page 504 =504 /maintenance.html;
     location = /maintenance.html {
         internal;
-        root /usr/share/nginx/www;
+        root <%= maintenance_root %>;
         allow all;
     }
 
