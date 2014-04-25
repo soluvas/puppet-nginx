@@ -49,7 +49,7 @@ define nginx::bippo_commerce54(
   $ssl_certificate     = undef,
   $ssl_certificate_key = undef,
   $ssl_session_timeout = '5m',
-  $appserver_port      = 8080,
+  $appserver_uri       = 'http://localhost:8080/',
   $tenant_id,
   $tenant_env,
   $write_user           = '',       # it's still READ access, just variable naming in htpasswd
