@@ -30,7 +30,8 @@ server {
         proxy_pass                      <%= appserver_uri %> ;
         proxy_set_header                X-Real-IP $remote_addr;
         proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_pass_header               Host;
+        # proxy_pass_header Host won't work here
+        proxy_set_header                Host $host;
 
 	# disable buffering for Comet requests
 	# Atmosphere should send X-Accel-Buffering: no instead: http://wiki.nginx.org/HttpProxyModule#proxy_buffering
@@ -69,7 +70,8 @@ server {
         proxy_pass                      <%= appserver_uri %> ;
         proxy_set_header                X-Real-IP $remote_addr;
         proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_pass_header                Host;
+        # proxy_pass_header Host won't work here
+        proxy_set_header                Host $host;
     }
 
 <% if write_user != '' -%>
@@ -101,7 +103,8 @@ server {
 	proxy_pass                      <%= appserver_uri %>js/ ;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-	proxy_pass_header               Host;
+        # proxy_pass_header Host won't work here
+        proxy_set_header                Host $host;
     }
 
     gzip_http_version   1.0;         # make it work with CloudFront
@@ -131,7 +134,8 @@ server {
 	proxy_pass                      <%= appserver_uri %>skin/ ;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-	proxy_pass_header               Host;
+        # proxy_pass_header Host won't work here
+        proxy_set_header                Host $host;
     }
 
     gzip_http_version   1.0;         # make it work with CloudFront
@@ -163,7 +167,8 @@ server {
 	proxy_pass                      <%= appserver_uri %>img/ ;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-	proxy_pass_header               Host;
+        # proxy_pass_header Host won't work here
+        proxy_set_header                Host $host;
     }
 
 <% if listen == '443' -%>
