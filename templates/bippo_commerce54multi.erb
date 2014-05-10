@@ -1,6 +1,6 @@
 server {
     listen      <%= listen %>;
-    server_name ~^www\.(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
+    server_name ~^(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
     access_log  <%= real_access_log %>;
     client_max_body_size        8M;
 
@@ -63,12 +63,12 @@ server {
 <% end -%>
 }
 
-# no-www to www redirect
+# multi behavior is different than normal domains: www to no-www redirect
 server {
     listen      <%= listen %>;
-    server_name ~^(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
+    server_name ~^www\.(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
     access_log  <%= real_access_log %>;
-    rewrite     ^ http://www.$subdomain.<%= real_server_name %>$request_uri permanent;
+    rewrite     ^ http://$subdomain.<%= real_server_name %>$request_uri permanent;
 }
 
 server {
