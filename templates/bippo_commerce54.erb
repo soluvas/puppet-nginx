@@ -91,7 +91,7 @@ server {
     listen      <%= listen %>;
     server_name <%= domain %>;
     access_log  <%= real_access_log %>;
-    rewrite     ^ http://www.<%= domain %>$request_uri permanent;
+    rewrite     ^ http://www.<%= domain %>$request_uri? permanent;
 }
 
 server {

@@ -68,7 +68,7 @@ server {
     listen      <%= listen %>;
     server_name ~^www\.(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
     access_log  <%= real_access_log %>;
-    rewrite     ^ http://$subdomain.<%= real_server_name %>$request_uri permanent;
+    rewrite     ^ http://$subdomain.<%= real_server_name %>$request_uri? permanent;
 }
 
 server {
