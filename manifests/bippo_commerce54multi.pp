@@ -19,7 +19,7 @@
 # Templates :
 # * nginx/bippo_commerce54multi.erb
 #
-# Sample Usage :
+# Sample Usage - Local:
 #
 #   # Bippo Commerce 5.0 for Berbatik
 #   nginx::dav { "dav.berbatik5.${::fqdn}":
@@ -31,6 +31,7 @@
 #   nginx::bippo_commerce54multi { "commerce.${::fqdn}":
 #     home          => "/home/${developer}/bipporeg_commerce_dev",
 #     appserver_uri => 'http://localhost:8080/',
+#     ssl           => true,
 #   }
 #
 define nginx::bippo_commerce54multi(
@@ -47,7 +48,9 @@ define nginx::bippo_commerce54multi(
   $appserver_uri       = 'http://localhost:8080/',
   $maintenance_root    = '/usr/share/nginx/www',
   $write_user           = '',       # it's still READ access, just variable naming in htpasswd
-  $write_password       = ''
+  $write_password       = '',
+  $ssl                  = false,
+  $listen_ssl           = 443,
 ) {
 
   $real_server_name = $server_name ? {
@@ -61,10 +64,10 @@ define nginx::bippo_commerce54multi(
   }
 
   # Autogenerating ssl certs
-  if $listen == '443' and  $ensure == 'present' and ($ssl_certificate == undef or $ssl_certificate_key == undef) {
+  if $ssl and  $ensure == 'present' and ($ssl_certificate == undef or $ssl_certificate_key == undef) {
     exec { "generate-${name}-certs":
       command => "/usr/bin/openssl req -new -inform PEM -x509 -nodes -days 999 -subj \
-        '/C=ZZ/ST=AutoSign/O=AutoSign/localityName=AutoSign/commonName=${real_server_name}/organizationalUnitName=AutoSign/emailAddress=AutoSign/' \
+        '/C=ZZ/ST=AutoSign/O=AutoSign/localityName=AutoSign/commonName=*.${real_server_name}/organizationalUnitName=AutoSign/emailAddress=AutoSign/' \
         -newkey rsa:2048 -out /etc/nginx/ssl/${name}.pem -keyout /etc/nginx/ssl/${name}.key",
       unless  => "/usr/bin/test -f /etc/nginx/ssl/${name}.pem",
       require => File['/etc/nginx/ssl'],

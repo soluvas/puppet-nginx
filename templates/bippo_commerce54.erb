@@ -14,8 +14,8 @@ server {
         allow all;
     }
 
-<% if listen == '443' -%>
-    ssl                         on;
+<% if ssl -%>
+    listen			<%= listen_ssl %> ssl;
     ssl_certificate             <%= real_ssl_certificate %>;
     ssl_certificate_key         <%= real_ssl_certificate_key %>;
 
@@ -66,14 +66,6 @@ server {
         deny  all;
     }
 
-    location /api/ {
-        proxy_pass                      <%= appserver_uri %> ;
-        proxy_set_header                X-Real-IP $remote_addr;
-        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-        # proxy_pass_header Host won't work here
-        proxy_set_header                Host $host;
-    }
-
 <% if write_user != '' -%>
             auth_basic            on;
             auth_basic_user_file  sites-htpasswd/<%= name %>.htpasswd;
@@ -89,15 +81,45 @@ server {
 # no-www to www redirect
 server {
     listen      <%= listen %>;
-    server_name <%= domain %>;
     access_log  <%= real_access_log %>;
-    rewrite     ^ http://www.<%= domain %>$request_uri permanent;
+<% if use_www -%>
+    server_name <%= name %>;
+    rewrite     ^ $scheme://www.<%= name %>$request_uri? permanent;
+<% else %>
+    server_name www.<%= name %>;
+    rewrite     ^ $scheme://<%= name %>$request_uri? permanent;
+<% end -%>
+
+<% if ssl -%>
+    listen			<%= listen_ssl %> ssl;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
 }
 
 server {
     listen      <%= listen %>;
-    server_name jso.<%= domain %> js.<%= domain %>;
+    server_name jso.<%= name %> js.<%= name %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
+
+<% if ssl -%>
+    listen			<%= listen_ssl %> ssl;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
 
     location / {
 	proxy_pass                      <%= appserver_uri %>js/ ;
@@ -109,8 +131,17 @@ server {
 
     gzip_http_version   1.0;         # make it work with CloudFront
 
-<% if listen == '443' -%>
-    ssl                         on;
+    expires     1y;
+    autoindex   off;
+}
+
+server {
+    listen      <%= listen %>;
+    server_name skino.<%= name %> skin.<%= name %>;
+    access_log  /var/log/nginx/<%= name %>_access.log;
+    
+<% if ssl -%>
+    listen			<%= listen_ssl %> ssl;
     ssl_certificate             <%= real_ssl_certificate %>;
     ssl_certificate_key         <%= real_ssl_certificate_key %>;
 
@@ -121,15 +152,6 @@ server {
 #    ssl_prefer_server_ciphers   on;
 <% end -%>
 
-    expires     1y;
-    autoindex   off;
-}
-
-server {
-    listen      <%= listen %>;
-    server_name skino.<%= domain %> skin.<%= domain %>;
-    access_log  /var/log/nginx/<%= name %>_access.log;
-    
     location / {
 	proxy_pass                      <%= appserver_uri %>skin/ ;
 	proxy_set_header                X-Real-IP $remote_addr;
@@ -140,18 +162,6 @@ server {
 
     gzip_http_version   1.0;         # make it work with CloudFront
 
-<% if listen == '443' -%>
-    ssl                         on;
-    ssl_certificate             <%= real_ssl_certificate %>;
-    ssl_certificate_key         <%= real_ssl_certificate_key %>;
-
-    ssl_session_timeout         <%= ssl_session_timeout %>;
-
-#    ssl_protocols               SSLv2 SSLv3 TLSv1;
-#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
-#    ssl_prefer_server_ciphers   on;
-<% end -%>
-
     #etag       on; # doesn't work, at least in nginx 1.3.15, Etag is disabled when content is gzipped
     expires     1y;
     autoindex   off;
@@ -160,19 +170,11 @@ server {
 server {
     # Be careful in aggregating CSS & JavaScript, it will get Expires: 1 year!
     listen      <%= listen %>;
-    server_name imgo.<%= domain %> img.<%= domain %>;
+    server_name imgo.<%= name %> img.<%= name %>;
     access_log  /var/log/nginx/<%= name %>_access.log;
     
-    location / {
-	proxy_pass                      <%= appserver_uri %>img/ ;
-	proxy_set_header                X-Real-IP $remote_addr;
-	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-        # proxy_pass_header Host won't work here
-        proxy_set_header                Host $host;
-    }
-
-<% if listen == '443' -%>
-    ssl                         on;
+<% if ssl -%>
+    listen			<%= listen_ssl %> ssl;
     ssl_certificate             <%= real_ssl_certificate %>;
     ssl_certificate_key         <%= real_ssl_certificate_key %>;
 
@@ -182,6 +184,14 @@ server {
 #    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
 #    ssl_prefer_server_ciphers   on;
 <% end -%>
+
+    location / {
+	proxy_pass                      <%= appserver_uri %>img/ ;
+	proxy_set_header                X-Real-IP $remote_addr;
+	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+        # proxy_pass_header Host won't work here
+        proxy_set_header                Host $host;
+    }
 
     expires     1y;
     autoindex   off;
