@@ -82,6 +82,7 @@ server {
 server {
     listen      <%= listen %>;
     access_log  <%= real_access_log %>;
+
 <% if use_www -%>
     server_name <%= name %>;
     rewrite     ^ $scheme://www.<%= name %>$request_uri? permanent;
