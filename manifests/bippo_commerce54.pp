@@ -22,7 +22,7 @@
 # Sample Usage - Local :
 #
 #  nginx::bippo_commerce54 { "tuneeca.${::fqdn}":
-#    use_www        => true,
+#    www_used       => true,
 #    home           => "/home/${developer}/bipporeg_commerce_dev",
 #    appserver_uri  => 'http://localhost:8980/',
 #    ssl            => true,
@@ -32,7 +32,7 @@
 #
 #   # inggabia
 #   nginx::bippo_commerce54 { "inggabia.com":
-#     use_www          => true,
+#     www_used         => true,
 #     home             => "/home/bippoapp",
 #     appserver_uri    => 'http://localhost:8204/',
 #     maintenance_root => '/home/bippoapp/bipporeg_commerce_prd/inggabia/common/maintenance',
@@ -40,7 +40,7 @@
 #   }
 #   # melia
 #   nginx::bippo_commerce54 { "melia.ahlanazma.com":
-#     use_www          => false,
+#     www_used         => false,
 #     home             => "/home/bippoapp",
 #     appserver_uri    => 'http://localhost:8204/',
 #     maintenance_root => '/home/bippoapp/bipporeg_commerce_prd/melia/common/maintenance'
@@ -60,15 +60,15 @@ define nginx::bippo_commerce54(
   $ssl_session_timeout = '5m',
   $appserver_uri       = 'http://localhost:8080/',
   $maintenance_root    = '/usr/share/nginx/www',
-  $write_user           = '',       # it's still READ access, just variable naming in htpasswd
-  $write_password       = '',
-  $ssl                  = false,
-  $listen_ssl           = 443,
-  $use_www              = true
+  $write_user          = '',       # it's still READ access, just variable naming in htpasswd
+  $write_password      = '',
+  $ssl                 = false,
+  $listen_ssl          = 443,
+  $www_used            = true
 ) {
 
   $real_server_name = $server_name ? {
-    undef   => $use_www ? {
+    undef   => $www_used ? {
       true => "www.${name}",
       false => $name
     },
