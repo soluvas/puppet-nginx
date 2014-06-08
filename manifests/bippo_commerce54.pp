@@ -17,25 +17,42 @@
 #   See http://wiki.nginx.org for details.
 #
 # Templates :
-# * nginx/magento_mall.erb
+# * nginx/bippo_commerce54.erb
+#
+# Sample Usage - Local :
+#
+#  nginx::bippo_commerce54 { "tuneeca.${::fqdn}":
+#    use_www        => true,
+#    home           => "/home/${developer}/bipporeg_commerce_dev",
+#    appserver_uri  => 'http://localhost:8980/',
+#    ssl            => true,
+#  }
 #
 # Sample Usage - Production :
 #
-#   # Ingga Bia
-#   nginx::bippo_commerce54 { "www.inggabia.com":
+#   # inggabia
+#   nginx::bippo_commerce54 { "inggabia.com":
+#     use_www          => true,
 #     home             => "/home/bippoapp",
-#     domain           => "inggabia.com",
 #     appserver_uri    => 'http://localhost:8204/',
-#     maintenance_root => '/home/bippoapp/bipporeg_commerce_prd/inggabia/common/maintenance'
+#     maintenance_root => '/home/bippoapp/bipporeg_commerce_prd/inggabia/common/maintenance',
+#     ssl              => true,
+#   }
+#   # melia
+#   nginx::bippo_commerce54 { "melia.ahlanazma.com":
+#     use_www          => false,
+#     home             => "/home/bippoapp",
+#     appserver_uri    => 'http://localhost:8204/',
+#     maintenance_root => '/home/bippoapp/bipporeg_commerce_prd/melia/common/maintenance'
+#     ssl              => true,
 #   }
 #
 define nginx::bippo_commerce54(
   $home,
-  $domain,
   $ensure              = 'present',
   $index               = 'index.html index.php',
   $include             = '',
-  $listen              = '80',
+  $listen              = 80,
   $server_name         = undef,
   $access_log          = undef,
   $ssl_certificate     = undef,
@@ -44,11 +61,17 @@ define nginx::bippo_commerce54(
   $appserver_uri       = 'http://localhost:8080/',
   $maintenance_root    = '/usr/share/nginx/www',
   $write_user           = '',       # it's still READ access, just variable naming in htpasswd
-  $write_password       = ''
+  $write_password       = '',
+  $ssl                  = false,
+  $listen_ssl           = 443,
+  $use_www              = true
 ) {
 
   $real_server_name = $server_name ? {
-    undef   => $name,
+    undef   => $use_www ? {
+      true => "www.${name}",
+      false => $name
+    },
     default => $server_name,
   }
 
@@ -58,7 +81,7 @@ define nginx::bippo_commerce54(
   }
 
   # Autogenerating ssl certs
-  if $listen == '443' and  $ensure == 'present' and ($ssl_certificate == undef or $ssl_certificate_key == undef) {
+  if $ssl and  $ensure == 'present' and ($ssl_certificate == undef or $ssl_certificate_key == undef) {
     exec { "generate-${name}-certs":
       command => "/usr/bin/openssl req -new -inform PEM -x509 -nodes -days 999 -subj \
         '/C=ZZ/ST=AutoSign/O=AutoSign/localityName=AutoSign/commonName=${real_server_name}/organizationalUnitName=AutoSign/emailAddress=AutoSign/' \
