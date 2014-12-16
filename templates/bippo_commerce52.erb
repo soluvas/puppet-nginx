@@ -28,6 +28,8 @@ server {
 
     location / {
         proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/app/;
+        proxy_redirect                  http:// $scheme://;
+        proxy_set_header                X-Forwarded-Proto $scheme;
         proxy_set_header                X-Real-IP $remote_addr;
         proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_pass_header               Host;
@@ -72,6 +74,8 @@ server {
 
     location /api/ {
         proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/api/;
+        proxy_redirect                  http:// $scheme://;
+        proxy_set_header                X-Forwarded-Proto $scheme;
         proxy_set_header                X-Real-IP $remote_addr;
         proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_pass_header                Host;
@@ -105,6 +109,8 @@ server {
 
     location / {
 	proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/js/;
+        proxy_redirect                  http:// $scheme://;
+        proxy_set_header                X-Forwarded-Proto $scheme;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
 	proxy_pass_header               Host;
@@ -139,6 +145,8 @@ server {
     
     location / {
 	proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/skin/;
+        proxy_redirect                  http:// $scheme://;
+        proxy_set_header                X-Forwarded-Proto $scheme;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
 	proxy_pass_header               Host;
@@ -175,6 +183,8 @@ server {
     
     location / {
 	proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_commerce/img/;
+        proxy_redirect                  http:// $scheme://;
+        proxy_set_header                X-Forwarded-Proto $scheme;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
 	proxy_pass_header               Host;
