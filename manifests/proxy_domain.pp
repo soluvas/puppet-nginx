@@ -46,9 +46,13 @@ define nginx::proxy_domain(
 ) {
 
   $real_server_name = $server_name ? {
-    undef   => $name,
+    undef   => $www_used ? {
+      true => "www.${name}",
+      false => $name
+    },
     default => $server_name,
   }
+
 
   $real_access_log = $access_log ? {
     undef   => "/var/log/nginx/${name}_access.log",
