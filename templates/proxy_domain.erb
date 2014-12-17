@@ -1,0 +1,73 @@
+server {
+    listen      <%= listen %>;
+    server_name <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
+    access_log  <%= real_access_log %>;
+    client_max_body_size        64M;
+
+<% if ssl -%>
+    listen			<%= listen_ssl %> ssl;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
+    location / {
+        proxy_pass                      <%= proxy_pass %>;
+        proxy_redirect                  http:// $scheme://;
+        proxy_set_header                X-Forwarded-Proto $scheme;
+        proxy_set_header                X-Real-IP $remote_addr;
+        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass_header               Host;
+        proxy_cookie_domain		localhost <%= real_server_name.is_a?(Array) ? real_server_name[0] : real_server_name %>;
+
+	proxy_send_timeout          300s;
+	proxy_read_timeout          300s;
+	
+	# requires nginx 1.3.13+ for websockets support
+        proxy_http_version              1.1;
+        proxy_set_header                Upgrade $http_upgrade;
+        proxy_set_header                Connection $http_connection;
+    }
+
+    location ~ /\. {
+        deny  all;
+    }
+
+<% if include  != '' -%>
+<%include.each do |inc| %>
+    include <%= inc %>;
+<% end -%>
+<% end -%>
+}
+
+# no-www to www redirect
+server {
+    listen      <%= listen %>;
+    access_log  <%= real_access_log %>;
+
+<% if www_used -%>
+    server_name <%= name %>;
+    rewrite     ^ $scheme://www.<%= name %>$request_uri? permanent;
+<% else %>
+    server_name www.<%= name %>;
+    rewrite     ^ $scheme://<%= name %>$request_uri? permanent;
+<% end -%>
+
+<% if ssl -%>
+    listen			<%= listen_ssl %> ssl;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+
+#    ssl_protocols               SSLv2 SSLv3 TLSv1;
+#    ssl_ciphers                 ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP;
+#    ssl_prefer_server_ciphers   on;
+<% end -%>
+
+}
