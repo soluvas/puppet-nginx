@@ -13,6 +13,8 @@ server {
 <% end -%>
 
     location / {
+        limit_req      zone=one burst=10 nodelay;
+
         proxy_pass                      <%= appserver_uri %><%= tenant_id %>_<%= tenant_env %>_aksimata/app/;
         proxy_redirect                  http:// $scheme://;
         proxy_set_header                X-Forwarded-Proto $scheme;
