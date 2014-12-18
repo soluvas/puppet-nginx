@@ -48,7 +48,6 @@ http {
     # https://sethvargo.com/getting-an-a-plus-on-qualys-ssl-labs-tester/
     ssl_session_cache           shared:SSL:10m;
     ssl_session_timeout         24h;
-    ssl_buffer_size             1400;
     
 <% if !ssl_certificate.empty? -%>
     ssl_certificate     <%= ssl_certificate %>;
