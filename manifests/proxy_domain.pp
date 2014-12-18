@@ -38,7 +38,7 @@ define nginx::proxy_domain(
   $access_log          = undef,
   $ssl_certificate     = undef,
   $ssl_certificate_key = undef,
-  $ssl_session_timeout = '5m',
+  $ssl_session_timeout = '24h',
   $ssl                 = false,
   $listen_ssl          = 443,
   $www_used            = true,

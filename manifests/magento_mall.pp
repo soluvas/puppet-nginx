@@ -46,7 +46,7 @@ define nginx::magento_mall(
   $access_log          = undef,
   $ssl_certificate     = undef,
   $ssl_certificate_key = undef,
-  $ssl_session_timeout = '5m',
+  $ssl_session_timeout = '24h',
   $commerce_path       = '/commerce-center',
   $commerce_uri        = 'http://localhost:9080/commerce-center/'
 ) {

@@ -9,7 +9,7 @@ define nginx::quikdo_hub(
   $access_log          = undef,
   $ssl_certificate     = undef,
   $ssl_certificate_key = undef,
-  $ssl_session_timeout = '5m',
+  $ssl_session_timeout = '24h',
   $appserver_uri       = 'http://localhost:8080/',
   $tenant_id,
   $tenant_env,

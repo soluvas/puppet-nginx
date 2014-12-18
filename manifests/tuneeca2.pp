@@ -33,7 +33,7 @@ define nginx::tuneeca2(
   $access_log          = undef,
   $ssl_certificate     = undef,
   $ssl_certificate_key = undef,
-  $ssl_session_timeout = '5m') {
+  $ssl_session_timeout = '24h') {
 
   $real_server_name = $server_name ? {
     undef   => $name,

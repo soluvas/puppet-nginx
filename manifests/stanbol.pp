@@ -7,7 +7,7 @@ define nginx::stanbol(
   $access_log          = undef,
   $ssl_certificate     = undef,
   $ssl_certificate_key = undef,
-  $ssl_session_timeout = '5m',
+  $ssl_session_timeout = '24h',
   $appserver_uri,
 ) {
 
