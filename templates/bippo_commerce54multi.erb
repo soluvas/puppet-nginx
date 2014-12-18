@@ -23,7 +23,7 @@ server {
 <% end -%>
 
     location / {
-        limit_req      zone=one burst=10 nodelay;
+        limit_req      zone=one burst=25 nodelay;
 
         proxy_pass                      <%= appserver_uri %> ;
         proxy_redirect                  http:// $scheme://;

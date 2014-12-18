@@ -39,8 +39,10 @@ http {
     gzip_disable        "MSIE [1-6]\.(?!.*SV1)";
 
     # http://axiacore.com/blog/enable-perfect-forward-secrecy-nginx/
-    limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
-    
+    limit_req_zone      $binary_remote_addr zone=one:10m rate=1r/s;
+    limit_req_status    429;  # return 429 (too many requests) instead of 503 (unavailable)
+    limit_conn_status   429;
+
     ssl_protocols               TLSv1 TLSv1.1 TLSv1.2;  # don’t use SSLv3 ref: POODLE
     ssl_prefer_server_ciphers   on;
     ssl_ciphers                 "EECDH+ECDSA+AESGCM EECDH+aRSA+AESGCM EECDH+ECDSA+SHA384 EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384 EECDH+aRSA+SHA256 EECDH+aRSA+RC4 EECDH EDH+aRSA RC4 !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS";
