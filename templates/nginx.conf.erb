@@ -37,7 +37,7 @@ http {
     gzip_buffers        16 8k;
     
     gzip_disable        "MSIE [1-6]\.(?!.*SV1)";
-    
+
     # http://axiacore.com/blog/enable-perfect-forward-secrecy-nginx/
     limit_req_zone $binary_remote_addr zone=one:10m rate=1r/s;
     
@@ -45,6 +45,11 @@ http {
     ssl_prefer_server_ciphers   on;
     ssl_ciphers                 "EECDH+ECDSA+AESGCM EECDH+aRSA+AESGCM EECDH+ECDSA+SHA384 EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384 EECDH+aRSA+SHA256 EECDH+aRSA+RC4 EECDH EDH+aRSA RC4 !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS";
 
+    # https://sethvargo.com/getting-an-a-plus-on-qualys-ssl-labs-tester/
+    ssl_session_cache           shared:SSL:10m;
+    ssl_session_timeout         24h;
+    ssl_buffer_size             1400;
+    
 <% if !ssl_certificate.empty? -%>
     ssl_certificate     <%= ssl_certificate %>;
 <% end -%>
