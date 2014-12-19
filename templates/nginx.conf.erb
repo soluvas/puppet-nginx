@@ -39,7 +39,8 @@ http {
     gzip_disable        "MSIE [1-6]\.(?!.*SV1)";
 
     # http://axiacore.com/blog/enable-perfect-forward-secrecy-nginx/
-    limit_req_zone      $binary_remote_addr zone=one:10m rate=1r/s;
+    # Hendy's note: people use join connection Speedy, WiFi, etc. including Tuneeca office so rate must be higher 
+    limit_req_zone      $binary_remote_addr zone=one:10m rate=2r/s;
     limit_req_status    429;  # return 429 (too many requests) instead of 503 (unavailable)
     limit_conn_status   429;
 
