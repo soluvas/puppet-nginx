@@ -28,7 +28,7 @@ server {
 
     location / {
         proxy_pass                      <%= appserver_uri %> ;
-        proxy_redirect                  http:// $scheme://;
+        #proxy_redirect                  http:// $scheme://; # not required, the default works (tested with hyperic) even with HTTPS
         proxy_set_header                X-Forwarded-Proto $scheme;
         proxy_set_header                X-Real-IP $remote_addr;
         proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -105,7 +105,6 @@ server {
 
     location / {
 	proxy_pass                      <%= appserver_uri %>/js/ ;
-        proxy_redirect                  http:// $scheme://;
         proxy_set_header                X-Forwarded-Proto $scheme;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -141,7 +140,6 @@ server {
 
     location / {
 	proxy_pass                      <%= appserver_uri %>/skin/ ;
-        proxy_redirect                  http:// $scheme://;
         proxy_set_header                X-Forwarded-Proto $scheme;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -179,7 +177,6 @@ server {
 
     location / {
 	proxy_pass                      <%= appserver_uri %>/img/ ;
-        proxy_redirect                  http:// $scheme://;
         proxy_set_header                X-Forwarded-Proto $scheme;
 	proxy_set_header                X-Real-IP $remote_addr;
 	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
