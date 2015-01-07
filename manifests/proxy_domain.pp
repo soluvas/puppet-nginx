@@ -1,12 +1,11 @@
-# Define: nginx::moodle
+# Define: nginx::proxy_domain
 #
-# Create a moodle fcgi site config from template using parameters.
-# You can use my php5-fpm class to manage fastcgi servers.
+# Reverse proxy an entire domain to (usually) Java webapp, with or without HTTPS, with HTTP/1.1 and WebSockets support,
+# with no-www to www redirect (by default, can be reversed).
 #
 # Parameters :
 # * ensure: typically set to "present" or "absent". Defaults to "present"
-# * root: document root (Required)
-# * fastcgi_pass : port or socket on which the FastCGI-server is listening (Required)
+# * proxy_pass: URI of backend webapp
 # * server_name : server_name directive (could be an array)
 # * listen : address/port the server listen to. Defaults to 80. Auto enable ssl if 443
 # * access_log : custom acces logs. Defaults to /var/log/nginx/$name_access.log
@@ -16,39 +15,44 @@
 # * ssl_certificate_key : ssl_certificate_key path. If empty auto-generating ssl cert key
 #   See http://wiki.nginx.org for details.
 #
-# Source: http://docs.moodle.org/dev/Install_Moodle_On_Ubuntu_with_Nginx/PHP-fpm
-#
 # Templates :
-# * nginx/moodle.erb
+# * nginx/proxy.erb
 #
 # Sample Usage :
-#    host_aliases => [$::hostname, "${developer}.${::fqdn}",
-#                     ...
-#				      "moodle.${::fqdn}",
-#				      ]
-#  nginx::moodle { "moodle.${::fqdn}":
-#    root          => "/home/${developer}/git/moodle",
-#    server_name   => ["moodle.${::fqdn}"],
-#    fastcgi_pass  => "unix:/var/run/php-${developer}.sock",
-#  }
 #
-define nginx::moodle(
-  $root,
-  $fastcgi_pass,
+#   # Hyperic HQ
+#   nginx::proxy { "hyperic.${::fqdn}":
+#     proxy_pass          => 'http://localhost:7080/',
+#     listen              => 443,
+#     ssl_certificate     => '/etc/ssl/certs/star.example.com.chained.crt',
+#     ssl_certificate_key => '/etc/ssl/private/star.example.com.key',
+#     require             => [ File['/etc/ssl/certs/star.example.com.chained.crt',
+#                                   '/etc/ssl/private/star.example.com.key'] ],
+#   }
+#
+define nginx::proxy_domain(
   $ensure              = 'present',
-  $index               = 'index.html index.php',
   $include             = '',
   $listen              = '80',
   $server_name         = undef,
   $access_log          = undef,
   $ssl_certificate     = undef,
   $ssl_certificate_key = undef,
-  $ssl_session_timeout = '24h') {
+  $ssl_session_timeout = '24h',
+  $ssl                 = false,
+  $listen_ssl          = 443,
+  $www_used            = true,
+  $proxy_pass,
+) {
 
   $real_server_name = $server_name ? {
-    undef   => $name,
+    undef   => $www_used ? {
+      true => "www.${name}",
+      false => $name
+    },
     default => $server_name,
   }
+
 
   $real_access_log = $access_log ? {
     undef   => "/var/log/nginx/${name}_access.log",
@@ -79,6 +83,7 @@ define nginx::moodle(
 
   nginx::site { $name:
     ensure  => $ensure,
-    content => template('nginx/moodle.erb'),
+    content => template('nginx/proxy_domain.erb'),
   }
 }
+

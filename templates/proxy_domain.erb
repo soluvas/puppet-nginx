@@ -4,8 +4,8 @@ server {
     access_log  <%= real_access_log %>;
     client_max_body_size        64M;
 
-<% if listen == '443' -%>
-    ssl                         on;
+<% if ssl -%>
+    listen			<%= listen_ssl %> ssl;
     ssl_certificate             <%= real_ssl_certificate %>;
     ssl_certificate_key         <%= real_ssl_certificate_key %>;
 
@@ -16,7 +16,7 @@ server {
         limit_req      zone=one burst=100 nodelay;
 
         proxy_pass                      <%= proxy_pass %>;
-        #proxy_redirect                  http:// $scheme://; # not required, the default works (tested with hyperic) even with HTTPS
+        proxy_redirect                  http:// $scheme://;
         proxy_set_header                X-Forwarded-Proto $scheme;
         proxy_set_header                X-Real-IP $remote_addr;
         proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
@@ -41,4 +41,27 @@ server {
     include <%= inc %>;
 <% end -%>
 <% end -%>
+}
+
+# no-www to www redirect
+server {
+    listen      <%= listen %>;
+    access_log  <%= real_access_log %>;
+
+<% if www_used -%>
+    server_name <%= name %>;
+    rewrite     ^ $scheme://www.<%= name %>$request_uri? permanent;
+<% else %>
+    server_name www.<%= name %>;
+    rewrite     ^ $scheme://<%= name %>$request_uri? permanent;
+<% end -%>
+
+<% if ssl -%>
+    listen			<%= listen_ssl %> ssl;
+    ssl_certificate             <%= real_ssl_certificate %>;
+    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+
+    ssl_session_timeout         <%= ssl_session_timeout %>;
+<% end -%>
+
 }
