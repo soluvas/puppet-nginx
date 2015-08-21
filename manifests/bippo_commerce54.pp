@@ -64,6 +64,7 @@ define nginx::bippo_commerce54(
   $write_password      = '',
   $ssl                 = false,
   $listen_ssl          = 443,
+  $force_ssl           = false,
   $www_used            = true
 ) {
 
