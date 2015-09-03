@@ -1,5 +1,16 @@
+<% if force_ssl -%>
 server {
     listen      <%= listen %>;
+    server_name <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
+    access_log  <%= real_access_log %>;
+    return 301 https://$server_name$request_uri;
+}
+<% end -%>
+
+server {
+<% if !force_ssl -%>
+    listen      <%= listen %>;
+<% end -%>
     server_name <%= real_server_name.is_a?(Array) ? real_server_name.join(' ') : real_server_name %>;
     access_log  <%= real_access_log %>;
     client_max_body_size        64M;

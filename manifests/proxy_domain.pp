@@ -41,6 +41,7 @@ define nginx::proxy_domain(
   $ssl_session_timeout = '24h',
   $ssl                 = false,
   $listen_ssl          = 443,
+  $force_ssl           = false,
   $www_used            = true,
   $proxy_pass,
 ) {
