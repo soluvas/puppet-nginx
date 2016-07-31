@@ -21,7 +21,7 @@ server {
     error_page 504 =504 /maintenance.html;
     location = /maintenance.html {
         internal;
-        root <%= maintenance_root %>;
+        root <%= @maintenance_root %>;
         allow all;
     }
 
@@ -59,11 +59,11 @@ server {
 
 #    FIXME: doesn't work
 #    location / {
-#        index     <%= index %>; ## Allow a static html file to be shown first
+#        index     <%= @index %>; ## Allow a static html file to be shown first
 #        try_files $uri $uri/ @commerce; ## If missing pass the URI to Magento's front handler
 #    }
 #    handler @commerce {
-#        proxy_pass                      <%= appserver_uri %> ;
+#        proxy_pass                      <%= @appserver_uri %> ;
 #        proxy_set_header                X-Real-IP $remote_addr;
 #        proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
 #        proxy_set_header                Host $http_host;
@@ -115,7 +115,7 @@ server {
     server_name jso.<%= @name %> js.<%= @name %>;
     access_log  /var/log/nginx/<%= @name %>_access.log;
 
-<% if ssl -%>
+<% if @ssl -%>
     listen			            <%= @listen_ssl %> ssl;
     ssl_certificate             <%= @real_ssl_certificate %>;
     ssl_certificate_key         <%= @real_ssl_certificate_key %>;
@@ -143,7 +143,7 @@ server {
     server_name skino.<%= @name %> skin.<%= @name %>;
     access_log  /var/log/nginx/<%= @name %>_access.log;
     
-<% if ssl -%>
+<% if @ssl -%>
     listen			            <%= @listen_ssl %> ssl;
     ssl_certificate             <%= @real_ssl_certificate %>;
     ssl_certificate_key         <%= @real_ssl_certificate_key %>;

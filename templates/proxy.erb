@@ -4,7 +4,7 @@ server {
     access_log  <%= @real_access_log %>;
     client_max_body_size        64M;
 
-<% if listen == '443' -%>
+<% if @listen == '443' -%>
     ssl                         on;
     ssl_certificate             <%= @real_ssl_certificate %>;
     ssl_certificate_key         <%= @real_ssl_certificate_key %>;

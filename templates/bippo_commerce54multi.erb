@@ -49,7 +49,7 @@ server {
         deny  all;
     }
 
-<% if write_user != '' -%>
+<% if @write_user != '' -%>
             auth_basic            on;
             auth_basic_user_file  sites-htpasswd/<%= @name %>.htpasswd;
 <% end -%>
