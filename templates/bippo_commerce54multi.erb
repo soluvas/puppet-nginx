@@ -1,7 +1,7 @@
 server {
-    listen      <%= listen %>;
-    server_name ~^(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
-    access_log  <%= real_access_log %>;
+    listen      <%= @listen %>;
+    server_name ~^(?<subdomain>[^.]+)\.<%= @real_server_name.gsub('.', '\.') %>$;
+    access_log  <%= @real_access_log %>;
     client_max_body_size        8M;
 
     error_page 404 =404 /maintenance.html;
@@ -10,22 +10,22 @@ server {
     error_page 504 =504 /maintenance.html;
     location = /maintenance.html {
         internal;
-        root <%= maintenance_root %>;
+        root <%= @maintenance_root %>;
         allow all;
     }
 
-<% if ssl -%>
-    listen			<%= listen_ssl %> ssl;
-    ssl_certificate             <%= real_ssl_certificate %>;
-    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+<% if @ssl -%>
+    listen			            <%= @listen_ssl %> ssl;
+    ssl_certificate             <%= @real_ssl_certificate %>;
+    ssl_certificate_key         <%= @real_ssl_certificate_key %>;
 
-    ssl_session_timeout         <%= ssl_session_timeout %>;
+    ssl_session_timeout         <%= @ssl_session_timeout %>;
 <% end -%>
 
     location / {
         limit_req      zone=one burst=100 nodelay;
 
-        proxy_pass                      <%= appserver_uri %> ;
+        proxy_pass                      <%= @appserver_uri %> ;
         #proxy_redirect                  http:// $scheme://; # not required, the default works (tested with hyperic) even with HTTPS
         proxy_set_header                X-Forwarded-Proto $scheme;
         proxy_set_header                X-Real-IP $remote_addr;
@@ -51,11 +51,11 @@ server {
 
 <% if write_user != '' -%>
             auth_basic            on;
-            auth_basic_user_file  sites-htpasswd/<%= name %>.htpasswd;
+            auth_basic_user_file  sites-htpasswd/<%= @name %>.htpasswd;
 <% end -%>
 
-<% if include  != '' -%>
-<%include.each do |inc| %>
+<% if @include != '' -%>
+<% @include.each do |inc| %>
     include <%= inc %>;
 <% end -%>
 <% end -%>
@@ -63,44 +63,44 @@ server {
 
 # multi behavior is different than normal domains: www to no-www redirect
 server {
-    listen      <%= listen %>;
-    server_name ~^www\.(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
-    access_log  <%= real_access_log %>;
-    rewrite     ^ $scheme://$subdomain.<%= real_server_name %>$request_uri permanent;
+    listen      <%= @listen %>;
+    server_name ~^www\.(?<subdomain>[^.]+)\.<%= @real_server_name.gsub('.', '\.') %>$;
+    access_log  <%= @real_access_log %>;
+    rewrite     ^ $scheme://$subdomain.<%= @real_server_name %>$request_uri permanent;
     
-<% if ssl -%>
-    listen			<%= listen_ssl %> ssl;
-    ssl_certificate             <%= real_ssl_certificate %>;
-    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+<% if @ssl -%>
+    listen			            <%= @listen_ssl %> ssl;
+    ssl_certificate             <%= @real_ssl_certificate %>;
+    ssl_certificate_key         <%= @real_ssl_certificate_key %>;
 
-    ssl_session_timeout         <%= ssl_session_timeout %>;
+    ssl_session_timeout         <%= @ssl_session_timeout %>;
 <% end -%>
 
 }
 
 server {
-    listen      <%= listen %>;
-    server_name ~^(jso|js)\.(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
-    access_log  /var/log/nginx/<%= name %>_access.log;
+    listen      <%= @listen %>;
+    server_name ~^(jso|js)\.(?<subdomain>[^.]+)\.<%= @real_server_name.gsub('.', '\.') %>$;
+    access_log  /var/log/nginx/<%= @name %>_access.log;
 
-<% if ssl -%>
-    listen			<%= listen_ssl %> ssl;
-    ssl_certificate             <%= real_ssl_certificate %>;
-    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+<% if @ssl -%>
+    listen			            <%= @listen_ssl %> ssl;
+    ssl_certificate             <%= @real_ssl_certificate %>;
+    ssl_certificate_key         <%= @real_ssl_certificate_key %>;
 
-    ssl_session_timeout         <%= ssl_session_timeout %>;
+    ssl_session_timeout         <%= @ssl_session_timeout %>;
 <% end -%>
 
     location / {
-	proxy_pass                      <%= appserver_uri %>/js/ ;
+	    proxy_pass                      <%= @appserver_uri %>/js/ ;
         proxy_set_header                X-Forwarded-Proto $scheme;
-	proxy_set_header                X-Real-IP $remote_addr;
-	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-	proxy_set_header                Host $subdomain.<%= real_server_name %>;
+	    proxy_set_header                X-Real-IP $remote_addr;
+	    proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+	    proxy_set_header                Host $subdomain.<%= @real_server_name %>;
     }
 
     location /tenant_common {
-	root <%= home %>/$subdomain/js;
+	    root <%= @home %>/$subdomain/js;
     }
 
     gzip_http_version   1.0;         # make it work with CloudFront
@@ -110,28 +110,28 @@ server {
 }
 
 server {
-    listen      <%= listen %>;
-    server_name ~^(skino|skin)\.(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
-    access_log  /var/log/nginx/<%= name %>_access.log;
+    listen      <%= @listen %>;
+    server_name ~^(skino|skin)\.(?<subdomain>[^.]+)\.<%= @real_server_name.gsub('.', '\.') %>$;
+    access_log  /var/log/nginx/<%= @name %>_access.log;
 
-<% if ssl -%>
-    listen			<%= listen_ssl %> ssl;
-    ssl_certificate             <%= real_ssl_certificate %>;
-    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+<% if @ssl -%>
+    listen			            <%= @listen_ssl %> ssl;
+    ssl_certificate             <%= @real_ssl_certificate %>;
+    ssl_certificate_key         <%= @real_ssl_certificate_key %>;
 
-    ssl_session_timeout         <%= ssl_session_timeout %>;
+    ssl_session_timeout         <%= @ssl_session_timeout %>;
 <% end -%>
 
     location / {
-	proxy_pass                      <%= appserver_uri %>/skin/ ;
+	    proxy_pass                      <%= @appserver_uri %>/skin/ ;
         proxy_set_header                X-Forwarded-Proto $scheme;
-	proxy_set_header                X-Real-IP $remote_addr;
-	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-	proxy_set_header                Host $subdomain.<%= real_server_name %>;
+	    proxy_set_header                X-Real-IP $remote_addr;
+	    proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+	    proxy_set_header                Host $subdomain.<%= @real_server_name %>;
     }
 
     location /tenant_common {
-	root <%= home %>/$subdomain/skin;
+	    root <%= @home %>/$subdomain/skin;
     }
 
     gzip_http_version   1.0;         # make it work with CloudFront
@@ -143,28 +143,28 @@ server {
 
 server {
     # Be careful in aggregating CSS & JavaScript, it will get Expires: 1 year!
-    listen      <%= listen %>;
-    server_name ~^(imgo|img)\.(?<subdomain>[^.]+)\.<%= real_server_name.gsub('.', '\.') %>$;
-    access_log  /var/log/nginx/<%= name %>_access.log;
+    listen      <%= @listen %>;
+    server_name ~^(imgo|img)\.(?<subdomain>[^.]+)\.<%= @real_server_name.gsub('.', '\.') %>$;
+    access_log  /var/log/nginx/<%= @name %>_access.log;
 
-<% if ssl -%>
-    listen			<%= listen_ssl %> ssl;
-    ssl_certificate             <%= real_ssl_certificate %>;
-    ssl_certificate_key         <%= real_ssl_certificate_key %>;
+<% if @ssl -%>
+    listen			            <%= @listen_ssl %> ssl;
+    ssl_certificate             <%= @real_ssl_certificate %>;
+    ssl_certificate_key         <%= @real_ssl_certificate_key %>;
 
-    ssl_session_timeout         <%= ssl_session_timeout %>;
+    ssl_session_timeout         <%= @ssl_session_timeout %>;
 <% end -%>
 
     location / {
-	proxy_pass                      <%= appserver_uri %>/img/ ;
+	    proxy_pass                      <%= @appserver_uri %>/img/ ;
         proxy_set_header                X-Forwarded-Proto $scheme;
-	proxy_set_header                X-Real-IP $remote_addr;
-	proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
-	proxy_set_header                Host $subdomain.<%= real_server_name %>;
+	    proxy_set_header                X-Real-IP $remote_addr;
+	    proxy_set_header                X-Forwarded-For $proxy_add_x_forwarded_for;
+	    proxy_set_header                Host $subdomain.<%= @real_server_name %>;
     }
 
     location /tenant_common {
-	root <%= home %>/$subdomain/img;
+        root <%= @home %>/$subdomain/img;
     }
 
     expires     1y;

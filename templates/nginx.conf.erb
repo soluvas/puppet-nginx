@@ -1,11 +1,11 @@
-user                    <%= user %>;
-worker_processes        <%= worker_processes  %>;
+user                    <%= @user %>;
+worker_processes        <%= @worker_processes  %>;
 
 error_log               /var/log/nginx/error.log;
 pid                     /var/run/nginx.pid;
 
 events {
-    worker_connections  <%= worker_connections  %>;
+    worker_connections  <%= @worker_connections  %>;
     # multi_accept      on;
 }
 
@@ -14,8 +14,8 @@ http {
 
     access_log	        /var/log/nginx/access.log;
 
-<% if server_names_hash_max_size != '' %>
-	server_names_hash_max_size	<%= server_names_hash_max_size %>;
+<% if @server_names_hash_max_size != '' %>
+	server_names_hash_max_size	<%= @server_names_hash_max_size %>;
 <% end -%>
 
     sendfile            on;
@@ -52,11 +52,11 @@ http {
     ssl_session_cache           shared:SSL:10m;
     ssl_session_timeout         24h;
     
-<% if !ssl_certificate.empty? -%>
-    ssl_certificate     <%= ssl_certificate %>;
+<% if !@ssl_certificate.empty? -%>
+    ssl_certificate     <%= @ssl_certificate %>;
 <% end -%>
-<% if !ssl_certificate_key.empty? -%>
-    ssl_certificate_key <%= ssl_certificate_key %>;
+<% if !@ssl_certificate_key.empty? -%>
+    ssl_certificate_key <%= @ssl_certificate_key %>;
 <% end -%>
 
     include /etc/nginx/conf.d/*.conf;
